@@ -1,0 +1,17 @@
+{
+    "title": "Payload schema of LernkartenBlock",
+    "type": "object",
+    "properties": {
+        "initialized": {
+            "type": "boolean"
+        },
+        "height": {
+            "type": "number"
+        },
+        "shareddeck": {
+            "type": "string"
+        }
+    },
+    "required": ["initialized"],
+    "additionalProperties": false
+}

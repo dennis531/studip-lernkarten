@@ -1,0 +1,9 @@
+parameters:
+    level: 8
+    scanFiles:
+        - LernkartenPlugin.php
+    scanDirectories:
+        - lib
+        - vendor
+        - ../../studip/studip53/
+    checkMissingIterableValueType: false

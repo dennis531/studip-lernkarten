@@ -1,0 +1,11 @@
+{
+    "name": "elan-ev/lernkarten",
+    "type": "project",
+    "license": "GPL-2.0+",
+    "autoload": {
+        "psr-4": {
+            "Lernkarten\\": "lib/"
+        }
+    },
+    "require": {}
+}

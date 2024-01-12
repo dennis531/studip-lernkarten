@@ -1,0 +1,53 @@
+{
+    "name": "lernkarten",
+    "type": "module",
+    "version": "1.0.3",
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/lernkarten.umd.cjs",
+    "module": "./dist/lernkarten.js",
+    "exports": {
+        ".": {
+            "import": "./dist/my-lib.js",
+            "require": "./dist/my-lib.umd.cjs"
+        }
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "watch": "vite build --watch --mode=development",
+        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+        "format": "prettier --write src/",
+        "gettext:compile": "vue-gettext-compile",
+        "gettext:extract": "vue-gettext-extract",
+        "zip": "zip -r Stud.IP-Lernkarten-v$npm_package_version.zip lib locale migrations vendor dist plugin.manifest *.php LICENSE README"
+    },
+    "dependencies": {
+        "pinia": "^2.1.7",
+        "vue": "^3.3.4",
+        "vue-router": "^4.2.5"
+    },
+    "devDependencies": {
+        "@ckeditor/ckeditor5-vue": "^4.0.1",
+        "@headlessui/vue": "^1.7.16",
+        "@rushstack/eslint-patch": "^1.3.3",
+        "@vitejs/plugin-vue": "4.5",
+        "@vue/eslint-config-prettier": "^8.0.0",
+        "autoprefixer": "^10.4.16",
+        "eslint": "^8.49.0",
+        "eslint-plugin-vue": "^9.17.0",
+        "fsrs.js": "^1.1.2",
+        "kitsu": "^10.1.2",
+        "papaparse": "^5.4.1",
+        "pinia-plugin-persistedstate": "^3.2.0",
+        "postcss": "^8.4.31",
+        "prettier": "^3.0.3",
+        "tailwindcss": "^3.3.5",
+        "vite": "^4.5.0",
+        "vue-resizable": "^2.1.7",
+        "vue3-dropzone": "^2.1.2",
+        "vue3-gettext": "^3.0.0-beta.1"
+    }
+}

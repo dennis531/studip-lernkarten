@@ -1,0 +1,10 @@
+pluginname=LernkartenPlugin
+pluginclassname=LernkartenPlugin
+pluginclassname=CoursewareLernkartenBlockPlugin
+origin=elan-ev
+version=0.1
+studipMinVersion=5.3
+studipMaxVersion=5.5.99
+localedomain=lernkarten
+descriptionshort=Digitale Karteikarten erstellen, austauschen und lernen
+descriptionlong=Lernkarten sind digitale Karteikarten, die beim Wiederholen von Lerninhalten unterstützen können. Die einzelnen Lernkarten können sowohl Bilder als auch Text enthalten. Lernende können Ihren eigenen Fortschritt in der Lernstatistik überprüfen\nLehrende und Studierende können in ihrem Arbeitsplatz beliebig viele Kartensätze anlegen. Als Lehrende können Sie diese in eine Stud.IP-Veranstaltung integrieren und den Teilnehmenden zur Verfügung stellen.\nDie Kartensätze können „mitgelernt” werden. Ist diese Funktion aktiviert, erhalten „Mitlernende” regelmäßig Updates, wenn die erstellende Person neue Karten hinzufügt.” Zusätzlich besteht die Option, sich einen Kartensatz zu „kopieren”. Wenn Lernende diese Funktion nutzen, übernehmen sie den Kartensatz in ihren Arbeitsplatz und können ihn selbst weiter gestalten.\nIn Courseware gibt es ab sofort den neuen „Lernkarten”-Block, über den Lernkarten direkt in ein Lernmaterial integriert werden können, um so zum Beispiel Selbsttests für Studierende zu gestalten.
