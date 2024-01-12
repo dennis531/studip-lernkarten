@@ -22,6 +22,7 @@
         "format": "prettier --write src/",
         "gettext:compile": "vue-gettext-compile",
         "gettext:extract": "vue-gettext-extract",
+        "prezip": "npm i && npm run build && composer install --no-dev && cd courseware && npm i && npm run build",
         "zip": "zip -r Stud.IP-Lernkarten-v$npm_package_version.zip lib locale migrations vendor dist plugin.manifest *.php LICENSE README"
     },
     "dependencies": {
