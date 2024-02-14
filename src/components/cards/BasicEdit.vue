@@ -31,7 +31,11 @@ const onStore = () => {
     }
     isStoring.value = true;
     cardsStore
-        .updateFields(props.card, { front: front.value, back: back.value, images: images.value })
+        .updateFields(props.card, {
+            front: window.STUDIP.wysiwyg.markAsHtml(front.value),
+            back: window.STUDIP.wysiwyg.markAsHtml(back.value),
+            images: images.value,
+        })
         .then(onCancel)
         .finally(() => (isStoring.value = false));
 };
@@ -45,7 +49,7 @@ watch(
     () => props.card,
     () => {
         reset();
-    },
+    }
 );
 </script>
 <template>

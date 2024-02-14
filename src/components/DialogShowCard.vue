@@ -151,3 +151,9 @@ const deleteCard = () => {
     </StudipDialog>
     <DialogConfirmDeleteCard v-model:open="showConfirmDelete" @confirm="deleteCard" />
 </template>
+
+<style scoped>
+:deep(.ck-editor__editable) {
+    max-height: 4rem !important;
+}
+</style>

@@ -17,6 +17,7 @@ use Lernkarten\Models\Note;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RuntimeException;
+use Studip\Markup;
 use User;
 
 /**
@@ -104,12 +105,9 @@ class CardsCreate extends JsonApiController
         /** @var Course|User */
         $deck = $this->getDeckFromJson($json);
         $model = self::arrayGet($json, 'data.attributes.model');
-        $fields = self::arrayGet($json, 'data.attributes.fields');
+        $fields = json_encode($this->purifyHTML(self::arrayGet($json, 'data.attributes.fields')));
 
-        $note = Note::create([
-            'model' => $model,
-            'fields' => json_encode($fields),
-        ]);
+        $note = Note::create(['model' => $model, 'fields' => $fields]);
 
         $resource = Card::create([
             'deck_id' => $deck->id,
@@ -137,12 +135,21 @@ class CardsCreate extends JsonApiController
         return null;
     }
 
+    private function purifyHTML(array $fields): iterable
+    {
+        $purified = [];
+        foreach ($fields as $key => $value) {
+            $purified[$key] = is_string($value) && Markup::hasHtmlMarker($value) ? Markup::purifyHtml($value) : $value;
+        }
+
+        return $purified;
+    }
+
     private function validModel(array $json): bool
     {
         $model = self::arrayGet($json, 'data.attributes.model');
 
-        return $model === 'basic'
-            || $model === 'image';
+        return $model === 'basic' || $model === 'image';
     }
 
     private function validFields(array $json): bool

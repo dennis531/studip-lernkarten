@@ -3,6 +3,7 @@ import Papa from 'papaparse';
 import { computed, ref } from 'vue';
 import StudipCompanion from './base/StudipCompanion.vue';
 import DialogImportCards from './DialogImportCards.vue';
+import IconAnchor from './IconAnchor.vue';
 import IconButton from './IconButton.vue';
 import { useCardsStore } from '../stores/cards.js';
 
@@ -18,7 +19,7 @@ const cards = computed(() => cardsStore.byDeck(props.deck));
 const mostRecentCard = computed(() =>
     cards.value.reduce((memo, card) => {
         return !memo || new Date(card.chdate) > new Date(memo.chdate) ? card : memo;
-    }, null),
+    }, null)
 );
 
 const chdate = computed(() => {
@@ -30,6 +31,18 @@ const chdate = computed(() => {
         ? mostRecentCard.value.chdate
         : props.deck.chdate;
 });
+
+const downloadName = computed(() =>
+    `kartensatz-${props.deck.name}-${chdate.value}.pdf`.replace(/[/|\\:*?"<>]/g, '')
+);
+
+const exportPdfUrl = computed(() =>
+    window.STUDIP.URLHelper.getURL(
+        `plugins.php/lernkartenplugin/api/pdf/${props.deck.id}`,
+        {},
+        true
+    )
+);
 
 const onImport = () => {
     showImportDialog.value = true;
@@ -56,16 +69,11 @@ const onExportCsv = () => {
 
     const filename = `kartensatz-${props.deck.name}-${chdate.value}.csv`.replace(
         /[/|\\:*?"<>]/g,
-        '',
+        ''
     );
 
     download(filename, csv);
 };
-
-const onExportPdf = () => {
-    // TODO
-    alert("Not yet implemented");
-}
 
 function download(filename, data) {
     const blob = new Blob([data], { type: 'text/csv' });
@@ -105,7 +113,11 @@ function download(filename, data) {
         </header>
         <section>
             <p>
-                {{ $gettext('Exportiere Karten in eine CSV-Datei (Microsoft Excel, LibreOffice Calc, …)') }}
+                {{
+                    $gettext(
+                        'Exportiere Karten in eine CSV-Datei (Microsoft Excel, LibreOffice Calc, …)'
+                    )
+                }}
             </p>
             <IconButton icon="export" type="button" @click="onExportCsv">
                 {{ $gettext('CSV exportieren') }}
@@ -113,9 +125,10 @@ function download(filename, data) {
             <p class="tw-mt-8">
                 {{ $gettext('Exportiere Karten in eine PDF-Datei') }}
             </p>
-            <IconButton icon="export" type="button" @click="onExportPdf">
+
+            <IconAnchor :href="exportPdfUrl" :download="downloadName" target="_blank" icon="export">
                 {{ $gettext('PDF exportieren') }}
-            </IconButton>
+            </IconAnchor>
         </section>
     </article>
     <DialogImportCards v-model:open="showImportDialog" :deck="deck" @success="onImportSuccessful" />

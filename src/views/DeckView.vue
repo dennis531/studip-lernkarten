@@ -41,7 +41,7 @@ const onShowShareDialog = () => (showShareDialog.value = true);
         <StudipProgressIndicator :description="$gettext('Lade Kartensatz…')" />
     </div>
     <div v-else>
-        <div v-if="isOwner" class="tw-mb-6 tw-flex tw-flex-row tw-items-center">
+        <div v-if="isOwner" class="tw-mb-6 tw-flex tw-flex-row tw-items-center tw-flex-wrap sm:tw-flex-nowrap">
             <div class="tw-grow">
                 <div v-if="folder" :title="$gettext('Zurück zum Ordner')">
                     <RouterLink

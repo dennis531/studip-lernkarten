@@ -1,0 +1,10 @@
+CHANGELOG
+=========
+
+1.1.0
+---
+
+* Add PDF export of decks.
+* Fix creating and updating cards by purifying HTML.
+* Fix display of decks and their learning statistics on small devices.
+* Fix translation errors.

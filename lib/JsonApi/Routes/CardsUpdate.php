@@ -10,9 +10,12 @@ use Lernkarten\JsonApi\Schemas\Card as CardSchema;
 use Lernkarten\Models\Card;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Studip\Markup;
 
 /**
  * Updates one Card.
+ *
+ * @SuppressWarnings(PHPMD.StaticAccess)
  */
 class CardsUpdate extends JsonApiController
 {
@@ -128,10 +131,20 @@ class CardsUpdate extends JsonApiController
         ];
     }
 
+    private function purifyHTML(array $fields): iterable
+    {
+        $purified = [];
+        foreach ($fields as $key => $value) {
+            $purified[$key] = is_string($value) && Markup::hasHtmlMarker($value) ? Markup::purifyHtml($value) : $value;
+        }
+
+        return $purified;
+    }
+
     private function update(Card $resource, array $json): Card
     {
         if (self::arrayHas($json, 'data.attributes.fields')) {
-            $fields = self::arrayGet($json, 'data.attributes.fields');
+            $fields = $this->purifyHTML(self::arrayGet($json, 'data.attributes.fields'));
             $resource->updateFields($fields);
         }
 

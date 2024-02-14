@@ -8,7 +8,7 @@ const circumference = 30 * 2 * Math.PI;
     <div
         class="tw-overflow-hidden tw-rounded-full tw-relative tw-flex tw-items-center tw-justify-center"
     >
-        <svg class="tw-w-20 tw-h-20">
+        <svg class="tw-h-10 tw-w-10 sm:tw-h-20 sm:tw-w-20" viewBox="0 0 80 80">
             <circle
                 class="tw-text-gray-300"
                 stroke-width="5"
@@ -31,6 +31,8 @@ const circumference = 30 * 2 * Math.PI;
                 cy="40"
             />
         </svg>
-        <span class="tw-absolute tw-text-xl tw-text-blue-700">{{ percent }}%</span>
+        <span class="tw-absolute tw-text-blue-700 tw-text-xs sm:tw-text-xl">
+            {{ percent }}<span class="tw-hidden sm:tw-inline">%</span>
+        </span>
     </div>
 </template>

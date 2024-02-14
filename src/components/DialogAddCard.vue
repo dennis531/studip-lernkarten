@@ -40,7 +40,11 @@ const createOne = () => {
     }
     const card = {
         model: cardType.value,
-        fields: { front: front.value, back: back.value, images: images.value },
+        fields: {
+            front: window.STUDIP.wysiwyg.markAsHtml(front.value),
+            back: window.STUDIP.wysiwyg.markAsHtml(back.value),
+            images: images.value,
+        },
     };
     cardsStore.createCard(props.deck, card).then(() => setIsOpen(false));
 };
@@ -50,7 +54,11 @@ const createMore = () => {
     }
     const card = {
         model: cardType.value,
-        fields: { front: front.value, back: back.value, images: images.value },
+        fields: {
+            front: window.STUDIP.wysiwyg.markAsHtml(front.value),
+            back: window.STUDIP.wysiwyg.markAsHtml(back.value),
+            images: images.value,
+        },
     };
     cardsStore.createCard(props.deck, card).then(reset);
 };
@@ -62,14 +70,14 @@ const setImage = (base64, fileid) => {
 const validate = () => {
     errors.value = {};
     if (!front.value.trim().length) {
-        errors.value.front = $gettext("Dieses Feld muss ausgefüllt werden.");
+        errors.value.front = $gettext('Dieses Feld muss ausgefüllt werden.');
     }
     if (!back.value.trim().length) {
-        errors.value.back = $gettext("Dieses Feld muss ausgefüllt werden.");
+        errors.value.back = $gettext('Dieses Feld muss ausgefüllt werden.');
     }
 
     return Object.keys(errors.value).length === 0;
-}
+};
 
 watch(
     () => props.open,
@@ -77,7 +85,7 @@ watch(
         if (open) {
             reset();
         }
-    },
+    }
 );
 </script>
 

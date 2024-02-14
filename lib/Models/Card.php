@@ -59,6 +59,11 @@ class Card extends SimpleORMap
         parent::configure($config);
     }
 
+    public function getFields(): array
+    {
+        return json_decode($this->note['fields'], true);
+    }
+
     public function updateFields(array $fields): void
     {
         $this->note = $this->note->cloneWithFields($fields);

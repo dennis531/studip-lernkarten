@@ -26,8 +26,8 @@ const totalLearned = computed(() => {
             <h1>{{ $gettext('Lernstatistik') }}</h1>
         </header>
 
-        <section class="tw-flex tw-gap-4">
-            <div>
+        <section class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4">
+            <div class="tw-flex tw-items-center tw-flex-row sm:tw-flex-col tw-gap-1">
                 <RadialProgress :progress="progress" />
                 <span class="tw-font-bold">{{ $gettext('Lernfortschritt') }}</span>
             </div>
