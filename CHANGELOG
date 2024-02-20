@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+1.2.0
+---
+
+* Change icon and wording of the former "Mitlernen" to "Abonnieren" of shared decks.
+* Fix error when requesting the subscription of a shared deck.
+
+
 1.1.0
 ---
 

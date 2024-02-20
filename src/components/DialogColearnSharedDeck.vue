@@ -22,8 +22,8 @@ const onConfirm = () => {
 <template>
     <StudipDialog
         :open="open"
-        :question="$gettext('Möchten Sie den geteilten Kartensatz mitlernen?')"
-        :title="$gettext('Geteilten Kartensatz mitlernen')"
+        :question="$gettext('Möchten Sie den geteilten Kartensatz abonnieren?')"
+        :title="$gettext('Geteilten Kartensatz abonnieren')"
         @confirm="onConfirm"
         @update:open="setIsOpen"
     >
@@ -31,7 +31,7 @@ const onConfirm = () => {
             <p>
                 {{
                     $gettext(
-                        'Wenn Sie den Kartensatz mitlernen, haben Sie keine Möglichkeit, die darin enthaltenen Karten zu bearbeiten.',
+                        'Wenn Sie den Kartensatz abonnieren, haben sie keine Möglichkeit, die darin enthaltenen Karten zu bearbeiten. Wenn die erstellende Person den Kartensatz verändert, aktualisiert sich Ihr Kartensatz automatisch.'
                     )
                 }}
             </p>

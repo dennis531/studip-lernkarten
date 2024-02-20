@@ -5,7 +5,6 @@ import DialogColearnSharedDeck from './DialogColearnSharedDeck.vue';
 import DialogConfirmUnshare from './DialogConfirmUnshare.vue';
 import DialogCopySharedDeck from './DialogCopySharedDeck.vue';
 import IconButton from './IconButton.vue';
-import StudipActionMenu from './base/StudipActionMenu.vue';
 import StudipAvatar from './base/StudipAvatar.vue';
 import StudipIcon from './base/StudipIcon.vue';
 import { useContextStore } from '../stores/context.js';
@@ -23,27 +22,6 @@ const showConfirmUnshareDialog = ref(false);
 const sharer = computed(() => props.sharedDeck.sharer.data);
 const avatarUrl = computed(() => sharer.value.meta.avatar.small);
 const formattedName = computed(() => sharer.value['formatted-name']);
-
-const actionMenuItems = computed(() => {
-    return isSharer.value
-        ? [
-              {
-                  id: 'unshare',
-                  label: $gettext('Nicht mehr teilen'),
-                  icon: 'decline',
-                  emit: 'unshare',
-              },
-          ]
-        : [
-              {
-                  id: 'copy',
-                  label: $gettext('Kopieren'),
-                  icon: 'copy',
-                  emit: 'copy',
-              },
-          ];
-});
-
 const isSharer = computed(() => sharer.value.id === contextStore.userId);
 
 const onCopy = () => (showCopyDialog.value = true);
@@ -62,7 +40,10 @@ const onUnshare = () => (showConfirmUnshareDialog.value = true);
             <StudipIcon shape="share" role="info" :size="32" />
         </div>
         <div class="tw-flex tw-flex-col tw-flex-grow tw-justify-between">
-            <div class="tw-text-lg tw-font-bold tw-text-[var(--base-color)]" @click="$emit('select', sharedDeck)">
+            <div
+                class="tw-text-lg tw-font-bold tw-text-[var(--base-color)]"
+                @click="$emit('select', sharedDeck)"
+            >
                 {{ sharedDeck.deck.data.name }}
             </div>
             <div class="tw-flex tw-items-center tw-justify-between">
@@ -72,16 +53,17 @@ const onUnshare = () => (showConfirmUnshareDialog.value = true);
                     {{ sharedDeck.deck.data.meta['cards-count'] }}
                 </div>
                 <div class="tw-px-4">
-                    <IconButton v-if="!isSharer" icon="refresh" type="button" @click="onColearn">
-                        {{ $gettext('Mitlernen') }}
+                    <template v-if="!isSharer">
+                        <IconButton icon="group" type="button" @click="onColearn">
+                            {{ $gettext('Abonnieren') }}
+                        </IconButton>
+                        <IconButton icon="copy" type="button" @click="onCopy">
+                            {{ $gettext('Kopieren') }}
+                        </IconButton>
+                    </template>
+                    <IconButton v-if="isSharer" icon="decline" type="button" @click="onUnshare">
+                        {{ $gettext('Nicht mehr teilen') }}
                     </IconButton>
-                    <StudipActionMenu
-                        v-if="actionMenuItems.length"
-                        :items="actionMenuItems"
-                        :collapseAt="0"
-                        @copy="onCopy"
-                        @unshare="onUnshare"
-                    />
                 </div>
             </div>
         </div>

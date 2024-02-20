@@ -95,8 +95,7 @@ export const useSharedDecksStore = defineStore(
 
         async function colearn(sharedDeck) {
             const { data } = await api.post(
-                `lernkarten-shared-decks/${sharedDeck.id}/colearn`,
-                sharedDeck
+                `lernkarten-shared-decks/${sharedDeck.id}/colearn`
             );
 
             return decksStore.fetchById(data.id).then(() => fetchById(sharedDeck.id));

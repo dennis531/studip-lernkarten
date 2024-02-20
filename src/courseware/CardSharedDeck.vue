@@ -42,7 +42,7 @@ const sharer = computed(() => props.sharedDeck.sharer.data);
                 </div>
                 <div class="tw-px-4">
                     <IconButton
-                        icon="refresh"
+                        icon="group"
                         type="button"
                         @click="$emit('colearn')"
                     >
