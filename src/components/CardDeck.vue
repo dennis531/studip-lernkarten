@@ -9,13 +9,10 @@ import StudipIcon from './base/StudipIcon.vue';
 import DialogAdjustLearningOptions from './DialogAdjustLearningOptions.vue';
 import DialogConfirmCopyDeck from './DialogConfirmCopyDeck.vue';
 import DialogConfirmDeleteDeck from './DialogConfirmDeleteDeck.vue';
-import DialogCopySharedDeck from './DialogCopySharedDeck.vue';
 import DialogShareDeck from './DialogShareDeck.vue';
-import { useContextStore } from '../stores/context.js';
 import { useDecksStore } from '../stores/decks.js';
 
 const { $gettext } = useGettext();
-const contextStore = useContextStore();
 const decksStore = useDecksStore();
 
 const props = defineProps(['deck']);
@@ -26,43 +23,39 @@ const showConfirmCopy = ref(false);
 const showConfirmDelete = ref(false);
 const showShareDialog = ref(false);
 
-const deckOwner = computed(() => props.deck.owner.data);
-const avatarUrl = computed(() => deckOwner.value.meta.avatar.small);
-const formattedName = computed(() => deckOwner.value['formatted-name']);
 const editable = computed(() => props.deck['is-editable']);
-
 const templateOwner = computed(() => props.deck.template.data.owner.data);
 const templateAvatarUrl = computed(() => templateOwner.value.meta.avatar.small);
 const templateFormattedName = computed(() => templateOwner.value['formatted-name']);
 
 const actionMenuItems = computed(() => {
-    const ownWorkplaceInTopFolder = !contextStore.isCourse && !props.deck.folder.data;
-    return [
+    const items = [
         {
             id: 'copy',
-            label: ownWorkplaceInTopFolder
-                ? $gettext('Kartensatz duplizieren')
-                : $gettext('Kartensatz kopieren'),
+            label: $gettext('Kartensatz kopieren'),
             icon: 'copy',
             emit: 'copy',
         },
-        ...(editable.value
-            ? [
-                  {
-                      id: 'share',
-                      label: $gettext('Kartensatz teilen'),
-                      icon: 'share',
-                      emit: 'share',
-                  },
-                  {
-                      id: 'delete',
-                      label: $gettext('Kartensatz löschen'),
-                      icon: 'trash',
-                      emit: 'delete',
-                  },
-              ]
-            : []),
     ];
+    if (editable.value) {
+        if (!props.deck.colearning) {
+            items.push({
+                id: 'share',
+                label: $gettext('Kartensatz teilen'),
+                icon: 'share',
+                emit: 'share',
+            });
+        }
+        items.push({
+            id: 'delete',
+            label: props.deck.colearning
+                ? $gettext('Abonnement aufheben')
+                : $gettext('Kartensatz löschen'),
+            icon: 'trash',
+            emit: 'delete',
+        });
+    }
+    return items;
 });
 
 const progress = computed(() => {
@@ -94,27 +87,24 @@ const deleteDeck = () => {
             <RadialProgress :progress="progress" />
         </div>
         <div class="tw-flex tw-flex-col tw-flex-grow tw-justify-between">
-            <div class="tw-italic tw-flex tw-gap-2 tw-items-center" v-if="deck.template.data">
-                <span v-if="deck.colearning">
-                    {{ $gettext('Geteilter Kartensatz von') }}
-                </span>
-                <span v-else>{{ $gettext('Kopie eines Kartensatzes von') }}</span>
-                <StudipAvatar
-                    class="tw-inline"
-                    :avatar-url="templateAvatarUrl"
-                    :formatted-name="templateFormattedName"
-                />
-            </div>
             <div
                 class="tw-cursor-pointer tw-flex-grow tw-text-[var(--base-color)]"
                 @click="$emit('select', deck)"
             >
                 <span class="tw-text-lg tw-font-bold">{{ deck.name }}</span>
             </div>
+            <div class="tw-italic tw-flex tw-gap-2 tw-items-center" v-if="deck.template.data"></div>
             <div class="tw-flex tw-items-center tw-justify-between">
-                <StudipAvatar :avatar-url="avatarUrl" :formatted-name="formattedName" />
+                <div v-if="deck.template.data && deck.colearning" class="tw-italic">
+                    <span> {{ $gettext('Im Abonnement von') }} </span>
+                    <StudipAvatar
+                        class="tw-inline"
+                        :avatar-url="templateAvatarUrl"
+                        :formatted-name="templateFormattedName"
+                    />
+                </div>
                 <div>
-                    <StudipIcon shape="dialog-cards" role="info" />
+                    <StudipIcon shape="dialog-cards" role="info" ariaRole="none" />
                     {{ deck.meta['cards-count'] }}
                 </div>
                 <div class="tw-px-4 tw-flex tw-gap-2 tw-items-center">
@@ -136,10 +126,5 @@ const deleteDeck = () => {
     <DialogAdjustLearningOptions v-model:open="showAdjustLearningDialog" :decks="[deck]" />
     <DialogConfirmDeleteDeck v-model:open="showConfirmDelete" @confirm="deleteDeck" />
     <DialogShareDeck v-if="showShareDialog" v-model:open="showShareDialog" :deck="deck" />
-    <DialogConfirmCopyDeck v-if="!deck.colearning" v-model:open="showConfirmCopy" :deck="deck" />
-    <DialogCopySharedDeck
-        v-if="deck.colearning"
-        v-model:open="showConfirmCopy"
-        :shared-deck="{ id: deck['shared-deck'].data.id }"
-    />
+    <DialogConfirmCopyDeck v-model:open="showConfirmCopy" :deck="deck" />
 </template>

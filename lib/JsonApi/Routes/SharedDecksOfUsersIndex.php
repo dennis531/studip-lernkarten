@@ -22,6 +22,7 @@ class SharedDecksOfUsersIndex extends JsonApiController
     protected $allowedIncludePaths = [
         SharedDeckSchema::REL_COLEARNING_DECK,
         SharedDeckSchema::REL_COLEARNING_DECK . '.' . DeckSchema::REL_OWNER,
+        SharedDeckSchema::REL_COPIED_DECKS,
         SharedDeckSchema::REL_DECK,
         SharedDeckSchema::REL_RECIPIENT,
         SharedDeckSchema::REL_SHARER,
@@ -46,10 +47,10 @@ class SharedDecksOfUsersIndex extends JsonApiController
             throw new AuthorizationFailedException();
         }
 
-        $resources = SharedDeck::findBySql('recipient_id = ? AND recipient_type = ?', [
-            $resource->id,
-            \User::class,
-        ]);
+        $resources = SharedDeck::findBySql(
+            '(recipient_id = ? AND recipient_type = ?) OR sharer_id = ?',
+            [$resource->id, \User::class, $resource->id]
+        );
 
         return $this->getPaginatedContentResponse(
             array_slice($resources, ...$this->getOffsetAndLimit()),

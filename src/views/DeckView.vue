@@ -5,6 +5,7 @@ import DeckDetails from '../components/DeckDetails.vue';
 import IconButton from '../components/IconButton.vue';
 import DialogAdjustLearningOptions from '../components/DialogAdjustLearningOptions.vue';
 import DialogEditDeck from '../components/DialogEditDeck.vue';
+import DialogMoveDeck from '../components/DialogMoveDeck.vue';
 import DialogShareDeck from '../components/DialogShareDeck.vue';
 import StudipIcon from '../components/base/StudipIcon.vue';
 import StudipProgressIndicator from '../components/base/StudipProgressIndicator.vue';
@@ -20,6 +21,7 @@ const props = defineProps(['id']);
 
 const showEditDialog = ref(false);
 const showAdjustLearningDialog = ref(false);
+const showMoveDialog = ref(false);
 const showShareDialog = ref(false);
 
 decksStore.fetchById(props.id);
@@ -33,6 +35,7 @@ const isOwner = computed(() => deckOwner.value && contextStore.userId === deckOw
 
 const onAdjustLearn = () => (showAdjustLearningDialog.value = true);
 const onShowEditDialog = () => (showEditDialog.value = true);
+const onShowMoveDialog = () => (showMoveDialog.value = true);
 const onShowShareDialog = () => (showShareDialog.value = true);
 </script>
 
@@ -41,7 +44,10 @@ const onShowShareDialog = () => (showShareDialog.value = true);
         <StudipProgressIndicator :description="$gettext('Lade Kartensatz…')" />
     </div>
     <div v-else>
-        <div v-if="isOwner" class="tw-mb-6 tw-flex tw-flex-row tw-items-center tw-flex-wrap sm:tw-flex-nowrap">
+        <div
+            v-if="isOwner"
+            class="tw-mb-6 tw-flex tw-flex-row tw-items-center tw-flex-wrap sm:tw-flex-nowrap"
+        >
             <div class="tw-grow">
                 <div v-if="folder" :title="$gettext('Zurück zum Ordner')">
                     <RouterLink
@@ -72,16 +78,15 @@ const onShowShareDialog = () => (showShareDialog.value = true);
                             :height="30"
                             :width="30"
                             class="tw-align-middle tw-mb-1"
+                            ariaRole="none"
                         />
                         <StudipIcon
                             shape="folder-home-empty"
                             :height="30"
                             :width="30"
                             class="tw-align-middle tw-mb-1"
+                            ariaRole="none"
                         />
-                        <span class="breadcrumb">
-                            {{ $gettext('Kein Ordner') }}
-                        </span>
                     </RouterLink>
                 </div>
                 <div class="tw-mt-3 tw-font-bold tw-text-lg">{{ deck.name }}</div>
@@ -90,11 +95,24 @@ const onShowShareDialog = () => (showShareDialog.value = true);
                 <IconButton icon="refresh" type="button" @click="onAdjustLearn">
                     {{ $gettext('Lernen') }}
                 </IconButton>
-                <IconButton v-if="!isColearning" icon="share" type="button" @click="onShowShareDialog">
+                <IconButton
+                    v-if="!isColearning"
+                    icon="share"
+                    type="button"
+                    @click="onShowShareDialog"
+                >
                     {{ $gettext('Teilen') }}
                 </IconButton>
-                <IconButton v-if="!isColearning" icon="edit" type="button" @click="onShowEditDialog">
+                <IconButton
+                    v-if="!isColearning"
+                    icon="edit"
+                    type="button"
+                    @click="onShowEditDialog"
+                >
                     {{ $gettext('Bearbeiten') }}
+                </IconButton>
+                <IconButton v-if="isColearning" icon="edit" type="button" @click="onShowMoveDialog">
+                    {{ $gettext('Verschieben') }}
                 </IconButton>
             </div>
         </div>
@@ -102,6 +120,7 @@ const onShowShareDialog = () => (showShareDialog.value = true);
     </div>
     <DialogAdjustLearningOptions v-model:open="showAdjustLearningDialog" :decks="[deck]" />
     <DialogEditDeck v-model:open="showEditDialog" :deck="deck" />
+    <DialogMoveDeck v-if="showMoveDialog" v-model:open="showMoveDialog" :deck="deck" />
     <DialogShareDeck v-if="showShareDialog" v-model:open="showShareDialog" :deck="deck" />
 </template>
 

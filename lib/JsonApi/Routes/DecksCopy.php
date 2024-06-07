@@ -30,7 +30,7 @@ class DecksCopy extends JsonApiController
         }
 
         $user = $this->getUser($request);
-        $deck = $deck->copyToWorkPlace($user);
+        $deck = $deck->copy($user);
         if (!$deck) {
             throw new BadRequestException('Could not copy Deck to Work Place.');
         }

@@ -2,20 +2,24 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-    shape: String,
+    ariaRole: {
+        type: String,
+        required: false,
+    },
+    name: {
+        type: String,
+        required: false,
+    },
     role: {
         type: String,
         required: false,
         default: 'clickable',
     },
+    shape: String,
     size: {
         type: Number,
         required: false,
         default: 16,
-    },
-    name: {
-        type: String,
-        required: false,
     },
 });
 
@@ -60,6 +64,14 @@ const url = computed(() => {
 </script>
 
 <template>
-    <input v-if="name" type="image" :name="name" :src="url" :width="size" :height="size" />
-    <img v-else :src="url" :width="size" :height="size" />
+    <input
+        v-if="name"
+        type="image"
+        :name="name"
+        :src="url"
+        :width="size"
+        :height="size"
+        :role="ariaRole"
+    />
+    <img v-else :src="url" :width="size" :height="size" :role="ariaRole" />
 </template>

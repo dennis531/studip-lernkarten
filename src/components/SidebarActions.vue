@@ -15,7 +15,11 @@ const actionList = computed(() => sidebar.actions.value ?? []);
                 <ul class="widget-list widget-links" :aria-label="$gettext('Aktionen')">
                     <li v-for="(action, index) in actionList" :key="index" class="!tw-pl-0">
                         <button type="button" @click="action.handler">
-                            <StudipIcon :shape="action.icon" class="!tw-align-middle" />
+                            <StudipIcon
+                                :shape="action.icon"
+                                class="!tw-align-middle"
+                                ariaRole="none"
+                            />
                             {{ action.text }}
                         </button>
                     </li>

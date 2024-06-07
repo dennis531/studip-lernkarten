@@ -1,5 +1,4 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
 import { useCompanionOverlay } from '../../composables/companion-overlay.js';
 
 const { show, message, mood, hideCompanionOverlay } = useCompanionOverlay();
@@ -15,6 +14,8 @@ const { show, message, mood, hideCompanionOverlay } = useCompanionOverlay();
         ]"
     >
         <div class="cw-companion-overlay-content" v-html="message"></div>
-        <button class="cw-compantion-overlay-close" @click="hideCompanionOverlay"></button>
+        <button class="cw-compantion-overlay-close" @click="hideCompanionOverlay">
+            <span class="sr-only">{{ $gettext('Schließen') }}</span>
+        </button>
     </div>
 </template>

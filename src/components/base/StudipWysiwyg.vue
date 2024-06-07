@@ -42,7 +42,7 @@ const onInput = (value) => {
 
 watch(
     () => props.modelValue,
-    () => (currentText.value = props.modelValue)
+    () => (currentText.value = props.modelValue),
 );
 </script>
 

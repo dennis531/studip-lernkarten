@@ -21,6 +21,7 @@ class SharedDecksIndex extends JsonApiController
     protected $allowedIncludePaths = [
         SharedDeckSchema::REL_COLEARNING_DECK,
         SharedDeckSchema::REL_COLEARNING_DECK . '.' . DeckSchema::REL_OWNER,
+        SharedDeckSchema::REL_COPIED_DECKS,
         SharedDeckSchema::REL_DECK,
         SharedDeckSchema::REL_RECIPIENT,
         SharedDeckSchema::REL_SHARER,

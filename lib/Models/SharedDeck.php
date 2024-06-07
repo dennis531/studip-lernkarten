@@ -84,8 +84,6 @@ class SharedDeck extends SimpleORMap
 
         $resource = Deck::create([
             'folder_id' => null,
-            'context_id' => $this->recipient_id,
-            'context_type' => $this->recipient_type,
             'name' => $this->deck->name,
             'description' => $this->deck->description,
             'metadata' => $this->deck->metadata,
@@ -93,6 +91,18 @@ class SharedDeck extends SimpleORMap
             'shared_deck_id' => $this->id,
             'template_id' => $this->deck_id,
             'colearning' => 1,
+
+            // Solange es in Veranstaltungen keine Ordner gibt, müssen die abonnierten Kartensätze stattdessen in den
+            // Arbeitsbereich kopiert werden. Daher entspricht der Kontext hier also nicht mehr dem des Kontext des
+            // geteilten Kartensatzes, wenn der Kartensatz in eine Veranstaltung geteilt wird.
+            //
+            // Ursprünglich:
+            // 'context_id' => $this->recipient_id,
+            // 'context_type' => $this->recipient_type,
+            //
+            // Aber jetzt:
+            'context_id' => $user->id,
+            'context_type' => User::class,
         ]);
 
         $resource->importCardsFromDeck($this->deck);
@@ -102,12 +112,33 @@ class SharedDeck extends SimpleORMap
 
     public function copyToWorkPlace(User $user): Deck
     {
-        return $this->deck->copyToWorkPlace($user, $this);
+        $newDeck = Deck::create([
+            'folder_id' => null,
+            'context_id' => $user->id,
+            'context_type' => User::class,
+            'name' => $this->deck->name,
+            'description' => $this->deck->description,
+            'owner_id' => $user->id,
+            'template_id' => $this->deck->id,
+            'shared_deck_id' => $this->id,
+        ]);
+
+        $newDeck->importCardsFromDeck($this->deck);
+
+        return $newDeck;
     }
 
     public function getColearningDeck(User $user): ?Deck
     {
         return Deck::findOneBySql('template_id = ? AND owner_id = ? AND colearning = 1', [
+            $this->deck_id,
+            $user->id,
+        ]);
+    }
+
+    public function getCopiedDecks(User $user): iterable
+    {
+        return Deck::findBySql('template_id = ? AND owner_id = ? AND colearning = 0', [
             $this->deck_id,
             $user->id,
         ]);

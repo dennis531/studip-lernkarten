@@ -74,7 +74,7 @@ class ExportPDF
                 }
             }
 
-            public function addFrontPage()
+            public function addFrontPage(): void
             {
                 $this->AddPage();
                 $this->writeHTMLCell(
@@ -104,7 +104,7 @@ class ExportPDF
                 );
             }
 
-            public function addCard(int $index, Card $card)
+            public function addCard(int $index, Card $card): void
             {
                 $fields = $card->getFields();
                 $this->AddPage();

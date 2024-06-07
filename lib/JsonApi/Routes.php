@@ -4,7 +4,7 @@ namespace Lernkarten\JsonApi;
 
 trait Routes
 {
-    public function registerAuthenticatedRoutes(\Slim\Routing\RouteCollectorProxy $group)
+    public function registerAuthenticatedRoutes(\Slim\Routing\RouteCollectorProxy $group): void
     {
         $group->get('/lernkarten-folders', Routes\FoldersIndex::class);
         $group->post('/lernkarten-folders', Routes\FoldersCreate::class);

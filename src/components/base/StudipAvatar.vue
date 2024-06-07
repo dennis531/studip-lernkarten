@@ -14,10 +14,7 @@ defineProps({
 <template>
     <div class="tw-items-center tw-flex tw-gap-1">
         <span>
-            <img
-                :title="formattedName"
-                alt=""
-                class="tw-align-middle tw-h-4" :src="avatarUrl" />
+            <img :title="formattedName" alt="" class="tw-align-middle tw-h-4" :src="avatarUrl" />
         </span>
         <span>{{ formattedName }}</span>
     </div>

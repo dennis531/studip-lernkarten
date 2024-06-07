@@ -60,7 +60,7 @@ class DecksUpdate extends JsonApiController
         if (!self::arrayHas($json, 'data.id')) {
             return 'Document must have an `id`.';
         }
-        if (self::arrayGet($json, 'data.id') !== $data->id) {
+        if (self::arrayGet($json, 'data.id') !== (string) $data->id) {
             return 'Differing `id`';
         }
 
@@ -78,11 +78,25 @@ class DecksUpdate extends JsonApiController
 
     private function update(Deck $resource, array $json): Deck
     {
-        foreach (['name', 'description', 'metadata', 'folder_id'] as $attr) {
+        $allowed = ['folder_id'];
+        $disallowed = ['name', 'description', 'metadata'];
+        $attrs = array_merge($allowed, $disallowed);
+
+        if ($resource->colearning) {
+            foreach ($disallowed as $attr) {
+                $value = self::arrayGet($json, 'data.attributes.' . $attr, $resource->$attr);
+                if ($value !== $resource->$attr) {
+                    throw new AuthorizationFailedException();
+                }
+            }
+        }
+
+        foreach ($resource->colearning ? $allowed : $attrs as $attr) {
             if (self::arrayHas($json, 'data.attributes.' . $attr)) {
                 $resource->$attr = trim(self::arrayGet($json, 'data.attributes.' . $attr));
             }
         }
+
         $resource->store();
 
         return $resource;

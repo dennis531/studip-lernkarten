@@ -35,15 +35,13 @@ const children = computed(() => {
     if (!folder.value) {
         return [];
     }
-    const children = foldersStore.children(props.id);
-
-    return _.sortBy(children, 'name');
+    return _.sortBy(foldersStore.children(props.id), 'name');
 });
 
 const decks = computed(() =>
     folder.value
         ? decksStore.byContext.filter((deck) => deck.folder.data?.id === folder.value.id)
-        : []
+        : [],
 );
 const isWorkplace = computed(() => !contextStore.isCourse);
 
@@ -96,14 +94,18 @@ const onCreateDeck = () => {
     <table class="default">
         <caption v-if="folder">
             <nav>
-                <span :title="$gettext('Zum Hauptordner')">
+                <span>
                     <RouterLink :to="{ name: 'home' }">
                         <StudipIcon
                             shape="folder-home-empty"
                             :height="30"
                             :width="30"
                             class="tw-align-middle tw-mr-1 tw-mb-1"
+                            ariaRole="none"
                         />
+                        <span class="sr-only">
+                            {{ $gettext('Zum Hauptordner') }}
+                        </span>
                     </RouterLink>
                     <span v-for="ancestor in foldersStore.ancestors(folder)" :key="ancestor.id">
                         /
@@ -134,7 +136,6 @@ const onCreateDeck = () => {
             </tr>
         </tfoot>
     </table>
-
     <section class="tw-mt-12" v-if="decks.length">
         <header>
             <h3 class="tw-mt-12">

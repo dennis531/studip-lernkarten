@@ -27,7 +27,7 @@ export const useSharedDecksStore = defineStore(
             return api
                 .fetch(`lernkarten-shared-decks/${id}`, {
                     params: {
-                        include: 'colearning-deck.owner,deck,sharer',
+                        include: 'colearning-deck.owner,deck,sharer,recipient',
                     },
                 })
                 .then(({ data }) => {
@@ -48,10 +48,10 @@ export const useSharedDecksStore = defineStore(
                 `${contextStore.type}/${contextStore.id}/lernkarten-shared-decks`,
                 {
                     params: {
-                        include: 'colearning-deck.owner,deck,sharer',
+                        include: 'colearning-deck.owner,deck,sharer,recipient',
                         'page[limit]': 1000,
                     },
-                }
+                },
             );
             isLoading.value = false;
             data.forEach(storeRecord);
@@ -61,8 +61,8 @@ export const useSharedDecksStore = defineStore(
             all.value.filter(
                 ({ recipient }) =>
                     recipient.data.type === contextStore.type &&
-                    recipient.data.id === contextStore.id
-            )
+                    recipient.data.id === contextStore.id,
+            ),
         );
 
         function byId(id) {
@@ -93,12 +93,11 @@ export const useSharedDecksStore = defineStore(
             return fetchById(data.id);
         }
 
-        async function colearn(sharedDeck) {
-            const { data } = await api.post(
-                `lernkarten-shared-decks/${sharedDeck.id}/colearn`
-            );
-
-            return decksStore.fetchById(data.id).then(() => fetchById(sharedDeck.id));
+        function colearn(sharedDeck) {
+            return api
+                .post(`lernkarten-shared-decks/${sharedDeck.id}/colearn`)
+                .then(({ data }) => decksStore.fetchById(data.id))
+                .then(() => fetchById(sharedDeck.id));
         }
 
         async function copy(sharedDeck) {
@@ -124,5 +123,5 @@ export const useSharedDecksStore = defineStore(
     },
     {
         persist: true,
-    }
+    },
 );

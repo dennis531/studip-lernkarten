@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
- * Updates one Deck.
+ * Updates one Folder.
  */
 class FoldersUpdate extends JsonApiController
 {

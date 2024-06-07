@@ -31,7 +31,7 @@ const onConfirm = () => {
             <p>
                 {{
                     $gettext(
-                        'Wenn Sie den Kartensatz kopieren, können Sie diesen und die darin enthaltenen Karten beliebig bearbeiten. Ihr kopierter Kartensatz wird aber nicht aktualisiert, wenn die erstellende Person das Original bearbeitet.'
+                        'Wenn Sie den Kartensatz kopieren, können Sie diesen und die darin enthaltenen Karten beliebig bearbeiten. Ihr kopierter Kartensatz wird aber nicht aktualisiert, wenn die erstellende Person das Original bearbeitet.',
                     )
                 }}
             </p>

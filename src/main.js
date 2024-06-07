@@ -19,7 +19,7 @@ const mountLernkarten = (el, data) => {
 
     app.use(pinia);
     app.use(router);
-    app.use(createGettext({ translations }));
+    app.use(createGettext({ translations, silent: true }));
 
     app.use(CKEditor);
 

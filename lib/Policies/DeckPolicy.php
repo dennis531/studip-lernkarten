@@ -69,7 +69,7 @@ class DeckPolicy
      */
     public function update(User $user, Deck $deck): bool
     {
-        return $deck->owner_id === $user->id && !$deck->colearning;
+        return $deck->owner_id === $user->id;
     }
 
     /**

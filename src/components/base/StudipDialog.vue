@@ -168,7 +168,8 @@ const confirmDialog = () => emit('confirm');
                             :aria-label="$gettext('Diesen Dialog schließen')"
                             :title="$gettext('Schließen')"
                             class="studip-dialog-close-button"
-                            @click="setIsOpen(false)"
+                            @click.prevent="setIsOpen(false)"
+                            type="button"
                         ></button>
                     </DialogTitle>
 

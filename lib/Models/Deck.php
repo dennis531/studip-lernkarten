@@ -65,17 +65,17 @@ class Deck extends SimpleORMap
         parent::configure($config);
     }
 
-    public function copyToWorkPlace(User $user, SharedDeck $sharedDeck = null): Deck
+    public function copy(User $user): Deck
     {
         $resource = self::create([
-            'folder_id' => null,
+            'folder_id' => $this->folder_id,
             'context_id' => $user->id,
             'context_type' => User::class,
             'name' => $this->name,
             'description' => $this->description,
             'owner_id' => $user->id,
             'template_id' => $this->id,
-            'shared_deck_id' => $sharedDeck ? $sharedDeck->id : null,
+            'shared_deck_id' => null,
         ]);
 
         $resource->importCardsFromDeck($this);

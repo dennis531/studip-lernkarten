@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
 import DeckCardsPanel from '../components/DeckCardsPanel.vue';
 import DeckInfoPanel from '../components/DeckInfoPanel.vue';
@@ -10,10 +10,6 @@ import { useContextStore } from '../stores/context.js';
 const contextStore = useContextStore();
 
 const props = defineProps(['deck']);
-
-const showEditDialog = ref(false);
-const showAdjustLearningDialog = ref(false);
-const showShareDialog = ref(false);
 
 const isColearning = computed(() => props.deck.colearning);
 const isOwner = computed(() => contextStore.userId === props.deck.owner.data.id);

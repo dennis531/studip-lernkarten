@@ -7,8 +7,8 @@ defineProps(['icon', 'variant']);
 <template>
     <button class="button" :class="{ 'button-link': variant === 'link' }">
         <span>
-            <StudipIcon :shape="icon" role="clickable" />
-            <StudipIcon :shape="icon" role="info_alt" />
+            <StudipIcon :shape="icon" role="clickable" ariaRole="none" />
+            <StudipIcon :shape="icon" role="info_alt" ariaRole="none" />
             <span>
                 <slot></slot>
             </span>
@@ -45,5 +45,6 @@ button:not(:hover) > span > img:nth-child(2) {
 
 .button-link {
     background: transparent;
+    border: none;
 }
 </style>

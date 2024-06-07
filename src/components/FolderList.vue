@@ -83,6 +83,7 @@ const toggleSort = (field) => {
                         :height="26"
                         :width="26"
                         class="tw-align-middle tw-mr-1 tw-mb-1"
+                        ariaRole="none"
                     />
                 </td>
                 <td>
@@ -98,7 +99,7 @@ const toggleSort = (field) => {
                             class="tw-border-0 tw-p-0 tw-bg-transparent tw-cursor-pointer tw-mr-2"
                             :title="$gettext('Bearbeiten')"
                         >
-                            <StudipIcon shape="edit" class="tw-align-middle" />
+                            <StudipIcon shape="edit" class="tw-align-middle" ariaRole="none" />
                             <span class="sr-only">{{ $gettext('Bearbeiten') }}</span>
                         </button>
                         <button
@@ -107,7 +108,7 @@ const toggleSort = (field) => {
                             class="tw-border-0 tw-p-0 tw-bg-transparent tw-cursor-pointer"
                             :title="$gettext('Löschen')"
                         >
-                            <StudipIcon shape="trash" class="tw-align-middle" />
+                            <StudipIcon shape="trash" class="tw-align-middle" ariaRole="none" />
                             <span class="sr-only">{{ $gettext('Löschen') }}</span>
                         </button>
                     </nav>

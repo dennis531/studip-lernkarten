@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+1.3.0
+---
+* Enhanced a11y by using ARIA roles.
+* Choose folder before colearning a shared deck.
+* Added a new navigation item of all shared decks.
+
+
 1.2.0
 ---
 

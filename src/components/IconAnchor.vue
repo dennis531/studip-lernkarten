@@ -7,8 +7,8 @@ defineProps(['icon', 'variant']);
 <template>
     <a class="button" :class="{ 'button-link': variant === 'link' }">
         <span class="tw-items-center tw-inline-flex tw-gap-1 tw-align-middle">
-            <StudipIcon :shape="icon" role="clickable" />
-            <StudipIcon :shape="icon" role="info_alt" />
+            <StudipIcon :shape="icon" role="clickable" ariaRole="none" />
+            <StudipIcon :shape="icon" role="info_alt" ariaRole="none" />
             <span>
                 <slot></slot>
             </span>

@@ -17,7 +17,7 @@ const showCardDialog = ref(false);
 
 const cards = computed(() => cardsStore.byDeck(props.deck));
 const mayEdit = computed(
-    () => !props.deck.colearning && contextStore.userId === props.deck.owner.data.id
+    () => !props.deck.colearning && contextStore.userId === props.deck.owner.data.id,
 );
 const selectedIndex = computed(() => {
     return selectedCard.value

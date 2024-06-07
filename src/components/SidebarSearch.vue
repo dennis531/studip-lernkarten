@@ -37,7 +37,11 @@ const onSubmit = () => {
                                 class="submit-search"
                                 :title="$gettext('Suche ausführen')"
                             >
-                                <StudipIcon shape="search" :size="20" />
+                                <StudipIcon
+                                    shape="search"
+                                    :size="20"
+                                    :alt="$gettext('Suche starten')"
+                                />
                             </button>
                         </div>
                     </li>

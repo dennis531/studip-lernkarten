@@ -1,9 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import DeckDetails from './DeckDetails.vue';
 import StudipDialog from './base/StudipDialog.vue';
 
-const props = defineProps(['open', 'deck']);
+defineProps(['open', 'deck']);
 const emit = defineEmits(['update:open']);
 
 const initialFocus = ref(null);

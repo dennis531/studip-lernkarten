@@ -42,8 +42,6 @@ const setIsOpen = (value) => {
 const onEdit = () => {
     cardViewMode.value = 'edit';
 };
-const onMove = () => {};
-const onReverse = () => {};
 const onDelete = () => {
     showConfirmDelete.value = true;
 };

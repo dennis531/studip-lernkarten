@@ -1,7 +1,7 @@
 {
     "name": "lernkarten",
     "type": "module",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "files": [
         "dist"
     ],
@@ -23,7 +23,7 @@
         "gettext:compile": "vue-gettext-compile",
         "gettext:extract": "vue-gettext-extract",
         "prezip": "npm i && npm run build && composer install --no-dev && cd courseware && npm i && npm run build",
-        "zip": "zip -r Stud.IP-Lernkarten-v$npm_package_version.zip lib locale migrations vendor dist courseware/dist plugin.manifest *.php LICENSE README"
+        "zip": "zip -r Stud.IP-Lernkarten-v$npm_package_version.zip lib locale migrations vendor dist courseware/dist plugin.manifest LernkartenPlugin.php CoursewareLernkartenBlockPlugin.php LICENSE README"
     },
     "dependencies": {
         "pinia": "^2.1.7",

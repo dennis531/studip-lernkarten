@@ -20,10 +20,10 @@ const selectedSharedDeck = ref(null);
 const showConfirmUnshareDialog = ref(false);
 
 const creator = computed(() =>
-    props.deck.colearning ? props.deck.template.data.owner.data : props.deck.owner.data
+    props.deck.colearning ? props.deck.template.data.owner.data : props.deck.owner.data,
 );
 const chdate = computed(
-    () => new Date(props.deck.colearning ? props.deck.template.data.chdate : props.deck.chdate)
+    () => new Date(props.deck.colearning ? props.deck.template.data.chdate : props.deck.chdate),
 );
 const avatarUrl = computed(() => creator.value.meta.avatar.small);
 const formattedName = computed(() => creator.value['formatted-name']);
@@ -34,17 +34,17 @@ const progress = computed(() => {
     return Math.floor((total ? props.deck.progress[2] / total : 0) * 100);
 });
 const sharedWithCourses = computed(() =>
-    props.deck['shared-decks'].data.filter(({ recipient }) => recipient.data.type === 'courses')
+    props.deck['shared-decks'].data.filter(({ recipient }) => recipient.data.type === 'courses'),
 );
 const sharedWithUsers = computed(() =>
-    props.deck['shared-decks'].data.filter(({ recipient }) => recipient.data.type === 'users')
+    props.deck['shared-decks'].data.filter(({ recipient }) => recipient.data.type === 'users'),
 );
 const actionMenuItems = computed(() => {
     return isOwner.value
         ? [
               {
                   id: 'unshare',
-                  label: $gettext('Nicht mehr teilen'),
+                  label: $gettext('Teilen aufheben'),
                   icon: 'decline',
                   emit: 'unshare',
               },
@@ -74,7 +74,7 @@ const onDidUnshare = () => {
             <table>
                 <tr>
                     <th>
-                        <StudipIcon shape="add" role="info" />
+                        <StudipIcon shape="add" role="info" ariaRole="none" />
                         {{ $gettext('Zuletzt bearbeitet') }}
                     </th>
                     <td>
@@ -86,7 +86,7 @@ const onDidUnshare = () => {
 
                 <tr>
                     <th>
-                        <StudipIcon shape="dialog-cards" role="info" />
+                        <StudipIcon shape="dialog-cards" role="info" ariaRole="none" />
                         {{ $gettext('Anzahl Karten') }}
                     </th>
                     <td>
@@ -95,7 +95,7 @@ const onDidUnshare = () => {
                 </tr>
                 <tr>
                     <th>
-                        <StudipIcon shape="vote" role="info" />
+                        <StudipIcon shape="vote" role="info" ariaRole="none" />
                         {{ $gettext('Gesamtfortschritt') }}
                     </th>
                     <td>
@@ -127,7 +127,7 @@ const onDidUnshare = () => {
 
     <article class="studip" v-if="isOwner && (sharedWithCourses.length || sharedWithUsers.length)">
         <header>
-            <h1>{{ $gettext('Geteilt mit') }}</h1>
+            <h1>{{ $gettext('Von mir geteilt mit') }}</h1>
         </header>
 
         <table class="default">
@@ -198,5 +198,19 @@ const onDidUnshare = () => {
 }
 .lernkarten-general-infos tr + tr > * {
     padding-block-start: 1rem;
+}
+
+.lernkarten-breadcrumbs {
+    display: flex-inline;
+    flex-wrap: wrap;
+    font-style: italic;
+    font-weight: normal;
+}
+.lernkarten-breadcrumbs > span:not(.sr-only) + span:before {
+    content: '»';
+    margin-inline: 0.2em;
+}
+.lernkarten-breadcrumbs > span {
+    white-space: nowrap;
 }
 </style>

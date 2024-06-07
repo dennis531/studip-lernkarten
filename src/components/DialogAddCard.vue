@@ -85,7 +85,7 @@ watch(
         if (open) {
             reset();
         }
-    }
+    },
 );
 </script>
 

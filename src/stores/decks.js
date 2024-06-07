@@ -73,12 +73,18 @@ export const useDecksStore = defineStore(
             isLoading.value = false;
         }
 
+        function byFolder(folder) {
+            return folder
+                ? byContext.value.filter((deck) => deck.folder.data?.id === folder.id)
+                : [];
+        }
+
         function byId(id) {
             return records.value.get(id);
         }
 
         async function copyDeck(deck) {
-            const { data } = await api.post(`lernkarten-decks/${deck.id}/copy`, deck);
+            const { data } = await api.post(`lernkarten-decks/${deck.id}/copy`);
 
             return fetchById(data.id);
         }
@@ -113,6 +119,7 @@ export const useDecksStore = defineStore(
         return {
             all,
             byContext,
+            byFolder,
             byId,
             copyDeck,
             createDeck,

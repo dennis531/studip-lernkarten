@@ -19,7 +19,7 @@ const cards = computed(() => cardsStore.byDeck(props.deck));
 const mostRecentCard = computed(() =>
     cards.value.reduce((memo, card) => {
         return !memo || new Date(card.chdate) > new Date(memo.chdate) ? card : memo;
-    }, null)
+    }, null),
 );
 
 const chdate = computed(() => {
@@ -33,15 +33,15 @@ const chdate = computed(() => {
 });
 
 const downloadName = computed(() =>
-    `kartensatz-${props.deck.name}-${chdate.value}.pdf`.replace(/[/|\\:*?"<>]/g, '')
+    `kartensatz-${props.deck.name}-${chdate.value}.pdf`.replace(/[/|\\:*?"<>]/g, ''),
 );
 
 const exportPdfUrl = computed(() =>
     window.STUDIP.URLHelper.getURL(
         `plugins.php/lernkartenplugin/api/pdf/${props.deck.id}`,
         {},
-        true
-    )
+        true,
+    ),
 );
 
 const onImport = () => {
@@ -69,7 +69,7 @@ const onExportCsv = () => {
 
     const filename = `kartensatz-${props.deck.name}-${chdate.value}.csv`.replace(
         /[/|\\:*?"<>]/g,
-        ''
+        '',
     );
 
     download(filename, csv);
@@ -115,7 +115,7 @@ function download(filename, data) {
             <p>
                 {{
                     $gettext(
-                        'Exportiere Karten in eine CSV-Datei (Microsoft Excel, LibreOffice Calc, …)'
+                        'Exportiere Karten in eine CSV-Datei (Microsoft Excel, LibreOffice Calc, …)',
                     )
                 }}
             </p>

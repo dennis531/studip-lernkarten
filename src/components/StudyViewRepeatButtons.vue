@@ -5,7 +5,6 @@ import { useFsrs } from '../composables/fsrs.js';
 defineEmits(['repeat']);
 
 const { Rating } = useFsrs();
-console.debug(Rating);
 </script>
 
 <template>

@@ -21,8 +21,8 @@ export const useFoldersStore = defineStore('folders', () => {
 
     const topFolders = computed(() => {
         return _.sortBy(
-            all.value.filter((folder) => !folder.parent.data && folder.context.data.id === context),
-            'name'
+            all.value.filter((folder) => !folder.parent.data),
+            'name',
         );
     });
 
@@ -57,7 +57,7 @@ export const useFoldersStore = defineStore('folders', () => {
                     params: {
                         'page[limit]': 1000,
                     },
-                }
+                },
             );
             data.forEach(storeRecord);
         } catch (err) {
@@ -68,7 +68,7 @@ export const useFoldersStore = defineStore('folders', () => {
     }
 
     function ancestors(folder, path = []) {
-        if (!folder.parent.data) {
+        if (!folder?.parent.data) {
             return path;
         }
         const parent = byId(folder.parent.data.id);

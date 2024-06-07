@@ -37,7 +37,7 @@ const reset = () => {
 };
 
 Promise.all([courseMembershipsStore.fetch(), instancesStore.fetch(), semestersStore.fetch()]).then(
-    () => (isLoading.value = false)
+    () => (isLoading.value = false),
 );
 
 const instanceRangeIds = computed(() => {
@@ -92,7 +92,7 @@ const onConfirm = () => {
     }
     promise
         .then(() =>
-            showCompanionOverlay($gettext('Kartensatz erfolgreich geteilt'), { mood: 'happy' })
+            showCompanionOverlay($gettext('Kartensatz erfolgreich geteilt'), { mood: 'happy' }),
         )
         .then(() => decksStore.fetchById(props.deck.id));
     setIsOpen(false);
@@ -131,7 +131,7 @@ const onConfirm = () => {
                             <span class="tw-block tw-opacity-70 tw-italic">
                                 {{
                                     $gettext(
-                                        'Das Lernkarten-Modul muss in den Veranstaltungen aktiv sein, um den Kartensatz mit diesen zu teilen.'
+                                        'Das Lernkarten-Modul muss in den Veranstaltungen aktiv sein, um den Kartensatz mit diesen zu teilen.',
                                     )
                                 }}
                             </span>

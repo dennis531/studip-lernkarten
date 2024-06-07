@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 import { useGettext } from 'vue3-gettext';
 import DialogColearnSharedDeck from './DialogColearnSharedDeck.vue';
 import DialogConfirmUnshare from './DialogConfirmUnshare.vue';
-import DialogCopySharedDeck from './DialogCopySharedDeck.vue';
 import IconButton from './IconButton.vue';
 import StudipAvatar from './base/StudipAvatar.vue';
 import StudipIcon from './base/StudipIcon.vue';
@@ -16,7 +15,6 @@ const props = defineProps(['sharedDeck']);
 defineEmits(['select']);
 
 const showColearnDialog = ref(false);
-const showCopyDialog = ref(false);
 const showConfirmUnshareDialog = ref(false);
 
 const sharer = computed(() => props.sharedDeck.sharer.data);
@@ -24,7 +22,6 @@ const avatarUrl = computed(() => sharer.value.meta.avatar.small);
 const formattedName = computed(() => sharer.value['formatted-name']);
 const isSharer = computed(() => sharer.value.id === contextStore.userId);
 
-const onCopy = () => (showCopyDialog.value = true);
 const onColearn = () => (showColearnDialog.value = true);
 const onUnshare = () => (showConfirmUnshareDialog.value = true);
 </script>
@@ -37,7 +34,7 @@ const onUnshare = () => (showConfirmUnshareDialog.value = true);
             class="tw-flex tw-items-center tw-justify-center tw-w-24 tw-aspect-square"
             @click="$emit('select', sharedDeck)"
         >
-            <StudipIcon shape="share" role="info" :size="32" />
+            <StudipIcon shape="share" role="info" :size="32" ariaRole="none" />
         </div>
         <div class="tw-flex tw-flex-col tw-flex-grow tw-justify-between">
             <div
@@ -49,16 +46,13 @@ const onUnshare = () => (showConfirmUnshareDialog.value = true);
             <div class="tw-flex tw-items-center tw-justify-between">
                 <StudipAvatar :avatar-url="avatarUrl" :formatted-name="formattedName" />
                 <div>
-                    <StudipIcon shape="dialog-cards" role="info" />
+                    <StudipIcon shape="dialog-cards" role="info" ariaRole="none" />
                     {{ sharedDeck.deck.data.meta['cards-count'] }}
                 </div>
                 <div class="tw-px-4">
                     <template v-if="!isSharer">
                         <IconButton icon="group" type="button" @click="onColearn">
                             {{ $gettext('Abonnieren') }}
-                        </IconButton>
-                        <IconButton icon="copy" type="button" @click="onCopy">
-                            {{ $gettext('Kopieren') }}
                         </IconButton>
                     </template>
                     <IconButton v-if="isSharer" icon="decline" type="button" @click="onUnshare">
@@ -70,5 +64,4 @@ const onUnshare = () => (showConfirmUnshareDialog.value = true);
     </section>
     <DialogColearnSharedDeck v-model:open="showColearnDialog" :shared-deck="sharedDeck" />
     <DialogConfirmUnshare v-model:open="showConfirmUnshareDialog" :shared-deck="sharedDeck" />
-    <DialogCopySharedDeck v-model:open="showCopyDialog" :shared-deck="sharedDeck" />
 </template>

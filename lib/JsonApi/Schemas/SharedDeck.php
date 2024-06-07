@@ -11,6 +11,7 @@ class SharedDeck extends SchemaProvider
 {
     public const TYPE = 'lernkarten-shared-decks';
     public const REL_COLEARNING_DECK = 'colearning-deck';
+    public const REL_COPIED_DECKS = 'copied-decks';
     public const REL_DECK = 'deck';
     public const REL_RECIPIENT = 'recipient';
     public const REL_SHARER = 'sharer';
@@ -53,6 +54,14 @@ class SharedDeck extends SchemaProvider
                 ]
                 : [],
             self::RELATIONSHIP_DATA => $colearningDeck,
+        ];
+
+        $copies = $resource->getCopiedDecks($this->currentUser);
+        $relationships[self::REL_COPIED_DECKS] = [
+            self::RELATIONSHIP_LINKS => [
+                Link::RELATED => $this->getRelationshipRelatedLink($resource, self::REL_COPIED_DECKS),
+            ],
+            self::RELATIONSHIP_DATA => $copies,
         ];
 
         $deck = $resource->deck;

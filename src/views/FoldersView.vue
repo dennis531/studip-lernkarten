@@ -9,17 +9,14 @@ import DialogConfirmDeleteFolder from '../components/DialogConfirmDeleteFolder.v
 import DialogShowDeck from '../components/DialogShowDeck.vue';
 import FolderList from '../components/FolderList.vue';
 import IconButton from '../components/IconButton.vue';
-import SharedDeckList from '../components/SharedDeckList.vue';
 import SidebarAction from '../components/SidebarAction.vue';
 import StudipCompanion from '../components/base/StudipCompanion.vue';
 import StudipIcon from '../components/base/StudipIcon.vue';
-import { useCardsStore } from '../stores/cards.js';
 import { useContextStore } from '../stores/context.js';
 import { useDecksStore } from '../stores/decks.js';
 import { useFoldersStore } from '../stores/folders.js';
 import { useSharedDecksStore } from '../stores/shared-decks.js';
 
-const cardsStore = useCardsStore();
 const contextStore = useContextStore();
 const decksStore = useDecksStore();
 const foldersStore = useFoldersStore();
@@ -41,14 +38,18 @@ const showDeckDialog = ref(false);
 const topFolders = computed(() => foldersStore.topFolders);
 const decks = computed(() =>
     _.sortBy(
-        decksStore.byContext.filter((deck) => !deck.folder.data && !deck.colearning),
-        ['name']
-    )
+        decksStore.byContext.filter((deck) => !deck.folder.data),
+        ['name'],
+    ),
 );
-const sharedWithMe = computed(() =>
-    sharedDecksStore.all.filter((sharedDeck) => sharedDeck.sharer.data.id !== contextStore.userId)
-);
+const hasUnusedSharedDecks = computed(() => unusedSharedDecks.value.length > 0);
 const isWorkplace = computed(() => !contextStore.isCourse);
+const sharedWithMe = computed(() =>
+    sharedDecksStore.all.filter((sharedDeck) => sharedDeck.sharer.data.id !== contextStore.userId),
+);
+const unusedSharedDecks = computed(() =>
+    sharedWithMe.value.filter((sharedDeck) => !sharedDeck['colearning-deck'].data),
+);
 
 const addTopFolder = () => (createDialogOpen.value = true);
 const editFolder = (folder) => {
@@ -72,12 +73,6 @@ const onConfirmDeleteDialog = () => {
     foldersStore.deleteFolder(selectedFolder.value);
 };
 const onLearnDecks = () => (showAdjustLearningDialog.value = true);
-const onSelectSharedDeck = (sharedDeck) => {
-    const deck = sharedDeck['colearning-deck'].data || sharedDeck.deck.data;
-    cardsStore.fetchByDeck({ id: deck.id });
-    selectedDeck.value = deck;
-    showDeckDialog.value = true;
-};
 const onCreateDeck = () => {
     router.push({ name: 'decks-create', query: { f: null } });
 };
@@ -96,18 +91,44 @@ const onCreateDeck = () => {
         :text="$gettext('Kartensätze lernen')"
         @click="onLearnDecks"
     />
+
+    <StudipCompanion
+        v-if="hasUnusedSharedDecks"
+        mood="curious"
+        :msg-companion="
+            $gettext(
+                'Mit Ihnen wurde ein neuer Kartensatz geteilt.',
+                'Mit Ihnen wurden %{ count } neue Kartensätze geteilt.',
+                { count: unusedSharedDecks.length },
+            )
+        "
+        class="tw-mb-8"
+    >
+        <template #companionActions>
+            <RouterLink :to="{ name: 'shared' }" class="button">
+                {{
+                    $gettext('Zum geteilten Kartensatz', 'Zu den geteilten Kartensätzen.', {
+                        count: unusedSharedDecks.length,
+                    })
+                }}
+            </RouterLink>
+        </template>
+    </StudipCompanion>
     <table class="default">
         <caption>
             <nav>
-                <span :title="$gettext('Zum Hauptordner')">
+                <span>
                     <RouterLink :to="{ name: 'home' }">
                         <StudipIcon
                             shape="folder-home-empty"
                             :height="30"
                             :width="30"
                             class="tw-align-middle tw-mr-2 tw-mb-1"
+                            ariaRole="none"
                         />
-                        <span class="">{{ $gettext('Lernkarten') }}</span>
+                        <span class="sr-only">
+                            {{ $gettext('Zum Hauptordner') }}
+                        </span>
                     </RouterLink>
                 </span>
             </nav>
@@ -115,13 +136,7 @@ const onCreateDeck = () => {
 
         <FolderList :folders="topFolders" @delete-folder="deleteFolder" @edit-folder="editFolder">
             <template #empty>
-                <StudipCompanion :msgCompanion="$gettext('Es gibt noch keinen Ordner.')">
-                    <template #companionActions>
-                        <IconButton icon="add" @click="addTopFolder">
-                            {{ $gettext('Ordner anlegen') }}
-                        </IconButton>
-                    </template>
-                </StudipCompanion>
+                <StudipCompanion :msgCompanion="$gettext('Es gibt noch keinen Ordner.')" />
             </template>
         </FolderList>
 
@@ -141,19 +156,10 @@ const onCreateDeck = () => {
     <section class="tw-mt-12" v-if="decks.length">
         <header>
             <h3>
-                {{ $gettext('Kartensätze ohne Ordner') }}
+                {{ $gettext('Kartensätze in diesem Ordner') }}
             </h3>
         </header>
         <DeckList :decks="decks" />
-    </section>
-
-    <section class="tw-mt-12" v-if="sharedWithMe.length">
-        <header>
-            <h3>
-                {{ $gettext('Mit mir geteilte Kartensätze') }}
-            </h3>
-        </header>
-        <SharedDeckList :shared-decks="sharedWithMe" @select="onSelectSharedDeck" />
     </section>
 
     <DialogAdjustLearningOptions v-model:open="showAdjustLearningDialog" :decks="decks" />
