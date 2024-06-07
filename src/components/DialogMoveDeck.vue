@@ -56,9 +56,6 @@ const onConfirm = () =>
         @update:open="setIsOpen"
     >
         <template #dialogContent>
-            <pre>
-                {{ JSON.stringify(folder?.id) }}
-            </pre>
             <form class="default studipform" @submit.prevent="onConfirm">
                 <div class="formpart">
                     <label class="studiprequired">

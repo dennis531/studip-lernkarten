@@ -152,7 +152,6 @@ const onConfirm = () => {
                                     </span>
                                 </option>
                             </select>
-                            <pre></pre>
                         </label>
                     </div>
                 </section>
