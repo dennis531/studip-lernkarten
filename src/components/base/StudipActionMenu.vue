@@ -112,7 +112,23 @@ const title = computed(() => {
                 {{ $gettext('Aktionen') }}
             </div>
             <ul class="action-menu-list">
-                <li v-for="item in navigationItems" :key="item.id" class="action-menu-item">
+                <li
+                    v-for="item in navigationItems"
+                    :key="item.id"
+                    class="action-menu-item"
+                    :class="{ 'action-menu-item-disabled': item.disabled }"
+                >
+                    <label v-if="item.disabled" aria-disabled="true" v-bind="item.attributes">
+                        <StudipIcon
+                            v-if="item.icon"
+                            :shape="item.icon"
+                            role="inactive"
+                            class="action-menu-item-icon"
+                        />
+                        <span v-else class="action-menu-no-icon"></span>
+
+                        {{ item.label }}
+                    </label>
                     <hr v-if="item.type === 'separator'" />
                     <a
                         v-else-if="item.type === 'link'"
@@ -120,7 +136,7 @@ const title = computed(() => {
                         v-on="linkEvents(item)"
                     >
                         <StudipIcon
-                            v-if="item.icon !== false"
+                            v-if="item.icon"
                             :shape="item.icon.shape"
                             :role="item.icon.role"
                         />
@@ -157,20 +173,28 @@ const title = computed(() => {
         </div>
     </div>
     <div v-else>
-        <a
-            v-for="item in navigationItems"
-            :key="item.id"
-            v-bind="linkAttributes(item)"
-            v-on="linkEvents(item)"
-        >
-            <span v-if="item.type === 'separator'" class="quiet">|</span>
-            <StudipIcon
-                v-else
-                :title="item.label"
-                :shape="item.icon.shape"
-                :role="item.icon.role"
-                :size="20"
-            />
-        </a>
+        <template v-for="item in navigationItems">
+            <label
+                v-if="item.disabled"
+                :key="item.id"
+                aria-disabled="true"
+                v-bind="linkAttributes(item)"
+            >
+                <StudipIcon
+                    :shape="item.icon.shape"
+                    :title="item.label"
+                    role="inactive"
+                    class="action-menu-item-icon"
+                />
+            </label>
+            <span v-else-if="item.type === 'separator'" :key="item.id" class="quiet">|</span>
+            <a v-else :key="item.id" v-bind="linkAttributes(item)" v-on="linkEvents(item)">
+                <StudipIcon
+                    :shape="item.icon.shape"
+                    :title="item.label"
+                    class="action-menu-item-icon"
+                />
+            </a>
+        </template>
     </div>
 </template>

@@ -160,7 +160,12 @@ const confirmDialog = () => emit('confirm');
                     :class="{ 'studip-dialog-warning': question, 'studip-dialog-alert': alert }"
                 >
                     <DialogTitle as="header" class="studip-dialog-header" ref="headerRef">
-                        <span class="studip-dialog-title" :title="dialogTitle">
+                        <span
+                            class="studip-dialog-title"
+                            :title="dialogTitle"
+                            role="heading"
+                            aria-level="2"
+                        >
                             {{ dialogTitle }}
                         </span>
                         <slot name="dialogHeader"></slot>

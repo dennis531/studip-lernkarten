@@ -2,6 +2,10 @@
 import { computed } from 'vue';
 
 const props = defineProps({
+    alt: {
+        type: String,
+        default: null,
+    },
     ariaRole: {
         type: String,
         required: false,
@@ -72,6 +76,16 @@ const url = computed(() => {
         :width="size"
         :height="size"
         :role="ariaRole"
+        v-bind="$attrs"
+        :alt="alt ?? ''"
     />
-    <img v-else :src="url" :width="size" :height="size" :role="ariaRole" />
+    <img
+        v-else
+        :src="url"
+        :width="size"
+        :height="size"
+        :role="ariaRole"
+        v-bind="$attrs"
+        :alt="alt ?? ''"
+    />
 </template>

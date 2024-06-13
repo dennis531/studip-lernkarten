@@ -22,6 +22,7 @@ const props = defineProps({
         default: false,
     },
 });
+const emit = defineEmits(['close']);
 
 const closed = ref(false);
 const closedDetails = ref(false);
@@ -30,6 +31,7 @@ const classNames = computed(() => {
     return `messagebox_${props.type} ${showDetails.value ? '' : 'details_hidden'}`;
 });
 const hasDetails = computed(() => {
+    // TODO: Anpassungen an Vue3 nachziehen, sobald Details verwendet werden sollen
     return false;
     // return !!slots.details || props.details.length > 0;
 });
@@ -39,6 +41,10 @@ const showDetails = computed(() => {
 
 const toggleDetails = () => {
     closedDetails.value = !closedDetails.value;
+};
+const close = () => {
+    closed.value = true;
+    emit('close');
 };
 </script>
 
@@ -59,7 +65,7 @@ const toggleDetails = () => {
                 class="close"
                 href=""
                 :title="$gettext('Nachrichtenbox schließen')"
-                @click.prevent="closed = true"
+                @click.prevent="close"
             >
                 <span>{{ $gettext('Nachrichtenbox schließen') }}</span>
             </a>

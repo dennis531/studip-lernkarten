@@ -14,10 +14,8 @@ const formatDate = (date) => {
 const pad = (what) => {
     return what.toString().padStart(2, '0');
 };
-
-const formatted = computed(() => formatDate(props.date));
 </script>
 
 <template>
-    <time :datetime="date.toISOString()">{{ formatted }}</time>
+    <time :datetime="date.toISOString()">{{ formatDate(date) }}</time>
 </template>
