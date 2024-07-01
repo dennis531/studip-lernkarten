@@ -3,6 +3,7 @@
 namespace Lernkarten\Models;
 
 use DBManager;
+use Lernkarten\Llm\OpenaiClient;
 use SimpleORMap;
 
 /**
@@ -57,6 +58,109 @@ class Card extends SimpleORMap
         };
 
         parent::configure($config);
+    }
+
+    /**
+     * Generate new cards
+     *
+     * @param Deck $deck target deck
+     * @param string $content data url containing a file
+     * @param int $number number of cards to be generated
+     * @return Card[] generated cards
+     */
+    public static function generate(Deck $deck, string $content, int $number): array
+    {
+        // Collect existing cards
+        $exiting_cards = self::findBySQL("deck_id = ?", [$deck->id]);
+        $existing_cards_fields = array_map(function ($card) {
+            $fields = json_decode($card->note->fields, true);
+
+            return [
+                'front' => $fields['front'],
+                'back' => $fields['back'],
+            ];
+        }, $exiting_cards);
+        $exiting_cards_json = json_encode($existing_cards_fields);
+
+        // Load file
+        [$prefix, $data] = explode(',', $content, 2);
+        $type_token = explode(':', $prefix, 2)[1];
+        $mime_type = explode(';', $type_token, 2)[0];
+
+        $text = '';
+        if ($mime_type === 'application/pdf') {
+            $parser = new \Smalot\PdfParser\Parser();
+            $text = $parser->parseContent(base64_decode($data))->getText();
+        }
+
+        // Build prompts
+        $system_prompt = "Sie sind Student/-in an einer Hochschule und erstellen Lernkarten.";
+
+        $user_prompt = "Die Inhalte für die Lernkarten:
+            
+$text
+
+Erstellen Sie ";
+
+        if ($number === 1) {
+            $user_prompt .= 'eine Karte mit Musterlösung';
+        } else {
+            $user_prompt .= $number . ' Karten mit Musterlösungen';
+        }
+
+        $user_prompt .= ' zum Inhalt. Formatieren Sie die Ausgabe als JSON.';
+
+        if (!empty($exiting_cards)) {
+            $user_prompt .= " Stellen Sie nur NEUE Lernkarten, die sich von den unten stehenden unterscheiden!
+                    
+                    $exiting_cards_json  
+                ";
+        } else {
+            $user_prompt .= ' Beispiel:
+
+[
+    {
+        "front": "Das ist eine Aufgabe",
+        "back": "Das ist eine Musterlösung"
+    }
+]
+                ';
+        }
+
+        if ($number === 1) {
+            $user_prompt .= "\nNun die nächste Lernkarte:";
+        } else {
+            $user_prompt .= "\nNun die nächsten $number Lernkarten:";
+        }
+
+        //file_put_contents('user_prompt.txt', $user_prompt);
+
+        $client = OpenaiClient::getInstance();
+        $response = $client->request($system_prompt, $user_prompt);
+
+        //file_put_contents('openai_response.txt', $response['choices'][0]['message']['content']);
+
+        // Process OpenAI response
+        $generated_cards = json_decode($response['choices'][0]['message']['content'], true);
+        if (!is_array($generated_cards)) {
+            // Ensure data is array
+            $generated_cards = [$generated_cards];
+        }
+
+        $card_objects = [];
+
+        // Store generated cards
+        foreach ($generated_cards as $generated_card) {
+            $fields = json_encode($generated_card);
+            $note = Note::create(['model' => 'basic', 'fields' => $fields]);
+
+            $card_objects[] = self::create([
+                'deck_id' => $deck->id,
+                'note_id' => $note->id,
+            ]);
+        }
+
+        return $card_objects;
     }
 
     public function getFields(): array

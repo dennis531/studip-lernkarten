@@ -26,6 +26,9 @@ trait Routes
         $group->patch('/lernkarten-cards/{id}', Routes\CardsUpdate::class);
         $group->delete('/lernkarten-cards/{id}', Routes\CardsDelete::class);
 
+        // not a real JSONAPI route
+        $group->post('/lernkarten-cards/generate', Routes\CardsGenerate::class);
+
         $group->get('/lernkarten-shared-decks', Routes\SharedDecksIndex::class);
         $group->post('/lernkarten-shared-decks', Routes\SharedDecksCreate::class);
         $group->get('/lernkarten-shared-decks/{id}', Routes\SharedDecksShow::class);

@@ -7,5 +7,7 @@
             "Lernkarten\\": "lib/"
         }
     },
-    "require": {}
+    "require": {
+        "smalot/pdfparser": "^2.10"
+    }
 }

@@ -5,21 +5,28 @@ import { useGettext } from 'vue3-gettext';
 import FolderSelector from '../components/FolderSelector.vue';
 import { useDecksStore } from '../stores/decks.js';
 import { useFoldersStore } from '../stores/folders.js';
+import { useCardsStore } from "../stores/cards.js";
 
 const { $gettext } = useGettext();
 const router = useRouter();
 const decksStore = useDecksStore();
 const foldersStore = useFoldersStore();
+const cardsStore = useCardsStore();
 
 const props = defineProps(['folder']);
 
 const folder = computed(() => foldersStore.byId(props.folder));
 
+const showFileInput = ref(false);
+const file = ref(null);
+const number = ref(5);
 const description = ref('');
 const selectedFolder = ref(folder.value);
 const metadata = ref('');
 const name = ref('');
 const nameRef = ref(null);
+const fileRef = ref(null);
+const isGenerating = ref(false);
 
 watch(
     () => foldersStore.isLoading,
@@ -34,11 +41,34 @@ const onSelectFolder = (selected) => {
     selectedFolder.value = selected;
 };
 
+const loadFile = (event) => {
+    if (event.target.files.length) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            // event.target.result contains base64 encoded image
+            file.value = e.target.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+};
+
 const onSubmit = () => {
-    if (validateName()) {
+    if (validateName() && validateFile()) {
         decksStore
             .createDeck(selectedFolder.value, name.value, description.value, metadata.value)
-            .then(({ id }) => router.push({ name: 'deck', params: { id } }));
+            .then((deck) => {
+                if (showFileInput && file.value) {
+                    // Generate cards
+                    isGenerating.value = true;
+                    cardsStore.generateCards(deck, file.value, number.value)
+                        .finally(() => {
+                            isGenerating.value = false;
+                            router.push({ name: 'deck', params: { id: deck.id } });
+                        })
+                } else {
+                    router.push({ name: 'deck', params: { id: deck.id } });
+                }
+            })
     }
 };
 
@@ -53,6 +83,22 @@ function validateName() {
         return true;
     }
 }
+
+function validateFile() {
+    if (!showFileInput.value) {
+        return true;
+    }
+
+    if (!file.value) {
+        fileRef.value.setCustomValidity(
+            $gettext('Bitte wählen Sie eine Datei aus.'),
+        );
+        return false;
+    } else {
+        fileRef.value.setCustomValidity('');
+        return true;
+    }
+}
 </script>
 
 <template>
@@ -61,7 +107,69 @@ function validateName() {
             <h1>{{ $gettext('Kartensatz anlegen') }}</h1>
         </header>
 
-        <form class="default studipform" @submit.prevent="onSubmit">
+        <!-- loading indicator -->
+        <div v-show="isGenerating" class="lernkarten-loading-indicator" />
+
+        <form v-show="!isGenerating" class="default studipform" @submit.prevent="onSubmit">
+            <div class="formpart">
+                <label class="studiprequired">
+                    <input
+                        type="checkbox"
+                        v-model="showFileInput"
+                    />
+                    <span class="textlabel">
+                        {{ $gettext('Aus Datei generieren') }}
+                    </span>
+                </label>
+            </div>
+
+            <div v-if="showFileInput">
+                <div class="formpart">
+                    <label class="studiprequired file-upload">
+                        <span class="textlabel">
+                            {{ $gettext('Datei auswählen') }}
+                        </span>
+                        <span
+                            class="asterisk"
+                            :title="$gettext('Dies ist ein Pflichtfeld')"
+                            aria-hidden="true"
+                        >*</span
+                        >
+                        <input
+                            type="file"
+                            accept="application/pdf"
+                            @change="loadFile"
+                            ref="fileRef"
+                            required
+                            aria-required="true"
+                        />
+                    </label>
+                </div>
+
+                <div class="formpart">
+                    <label class="studiprequired">
+                        <span class="textlabel">
+                            {{ $gettext('Kartenanzahl') }}
+                        </span>
+                        <span
+                            class="asterisk"
+                            :title="$gettext('Dies ist ein Pflichtfeld')"
+                            aria-hidden="true"
+                        >*</span
+                        >
+                        <input
+                            type="number"
+                            v-model="number"
+                            min="1"
+                            max="100"
+                            step="1"
+                            required
+                            aria-required="true"
+                        />
+                    </label>
+                </div>
+            </div>
+
             <div class="formpart">
                 <label class="studiprequired">
                     <span class="textlabel">
@@ -125,3 +233,14 @@ function validateName() {
         </form>
     </article>
 </template>
+
+<style>
+.lernkarten-loading-indicator {
+    width: 100%;
+    background-image: url("../../../../../assets/images/loading-indicator.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    height: 150px;
+}
+</style>

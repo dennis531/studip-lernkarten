@@ -47,6 +47,16 @@ export const useCardsStore = defineStore(
             return data;
         }
 
+        async function generateCards(deck, content, number) {
+            return api.axios.post('lernkarten-cards/generate',{
+                deck_id: deck.id,
+                content: content,
+                number: number,
+            }, {
+                timeout: 60000 // Wait one minute
+            });
+        }
+
         async function deleteCard(card) {
             return api
                 .delete('lernkarten-cards', card.id)
@@ -84,6 +94,7 @@ export const useCardsStore = defineStore(
             all,
             byDeck,
             createCard,
+            generateCards,
             deleteCard,
             errors,
             fetchByDeck,
