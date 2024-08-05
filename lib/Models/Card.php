@@ -3,6 +3,7 @@
 namespace Lernkarten\Models;
 
 use DBManager;
+use JsonApi\Errors\InternalServerError;
 use Lernkarten\Llm\OpenaiClient;
 use SimpleORMap;
 
@@ -89,8 +90,12 @@ class Card extends SimpleORMap
 
         $text = '';
         if ($mime_type === 'application/pdf') {
-            $parser = new \Smalot\PdfParser\Parser();
-            $text = $parser->parseContent(base64_decode($data))->getText();
+            try {
+                $parser = new \Smalot\PdfParser\Parser();
+                $text = $parser->parseContent(base64_decode($data))->getText();
+            } catch (\Exception $exception) {
+                throw new InternalServerError('Could not parse PDF file');
+            }
         }
 
         // Build prompts

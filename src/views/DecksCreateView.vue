@@ -6,6 +6,7 @@ import FolderSelector from '../components/FolderSelector.vue';
 import { useDecksStore } from '../stores/decks.js';
 import { useFoldersStore } from '../stores/folders.js';
 import { useCardsStore } from "../stores/cards.js";
+import StudipMessageBox from "../components/base/StudipMessageBox.vue";
 
 const { $gettext } = useGettext();
 const router = useRouter();
@@ -16,6 +17,14 @@ const cardsStore = useCardsStore();
 const props = defineProps(['folder']);
 
 const folder = computed(() => foldersStore.byId(props.folder));
+const errorMessage = computed(() => {
+    if (!error.value) {
+        return '';
+    }
+
+    return error?.value?.response?.data?.errors?.[0]?.detail ??
+        $gettext('Beim Generieren der Karten ist ein Fehler aufgetreten.');
+});
 
 const showFileInput = ref(false);
 const file = ref(null);
@@ -27,6 +36,7 @@ const name = ref('');
 const nameRef = ref(null);
 const fileRef = ref(null);
 const isGenerating = ref(false);
+const error = ref(null);
 
 watch(
     () => foldersStore.isLoading,
@@ -52,19 +62,30 @@ const loadFile = (event) => {
     }
 };
 
+const generateCards = (deck) => {
+    isGenerating.value = true;
+
+    cardsStore.generateCards(deck, file.value, number.value)
+        .then(() => {
+            isGenerating.value = false;
+            router.push({ name: 'deck', params: { id: deck.id } });
+        })
+        .catch((err) => {
+            // Remove deck if generation fails
+            decksStore.deleteDeck(deck);
+            isGenerating.value = false;
+            error.value = err
+        })
+}
+
 const onSubmit = () => {
     if (validateName() && validateFile()) {
+        error.value = null
         decksStore
             .createDeck(selectedFolder.value, name.value, description.value, metadata.value)
             .then((deck) => {
                 if (showFileInput && file.value) {
-                    // Generate cards
-                    isGenerating.value = true;
-                    cardsStore.generateCards(deck, file.value, number.value)
-                        .finally(() => {
-                            isGenerating.value = false;
-                            router.push({ name: 'deck', params: { id: deck.id } });
-                        })
+                    generateCards(deck);
                 } else {
                     router.push({ name: 'deck', params: { id: deck.id } });
                 }
@@ -111,6 +132,10 @@ function validateFile() {
         <div v-show="isGenerating" class="lernkarten-loading-indicator" />
 
         <form v-show="!isGenerating" class="default studipform" @submit.prevent="onSubmit">
+            <StudipMessageBox v-if="errorMessage" type="error">
+                {{ errorMessage }}
+            </StudipMessageBox>
+
             <div class="formpart">
                 <label class="studiprequired">
                     <input
