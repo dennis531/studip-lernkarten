@@ -139,6 +139,10 @@ Erstellen Sie ";
 
         // Process OpenAI response
         $generated_cards = json_decode($matches[0], true);
+        if (!$generated_cards) {
+            throw new InternalServerError('Could not generate cards');
+        }
+
         if (!is_array($generated_cards)) {
             // Ensure data is array
             $generated_cards = [$generated_cards];
@@ -148,13 +152,15 @@ Erstellen Sie ";
 
         // Store generated cards
         foreach ($generated_cards as $generated_card) {
-            $fields = json_encode($generated_card);
-            $note = Note::create(['model' => 'basic', 'fields' => $fields]);
+            if (array_key_exists('front', $generated_card) && array_key_exists('back', $generated_card)) {
+                $fields = json_encode($generated_card);
+                $note = Note::create(['model' => 'basic', 'fields' => $fields]);
 
-            $card_objects[] = self::create([
-                'deck_id' => $deck->id,
-                'note_id' => $note->id,
-            ]);
+                $card_objects[] = self::create([
+                    'deck_id' => $deck->id,
+                    'note_id' => $note->id,
+                ]);
+            }
         }
 
         return $card_objects;
