@@ -131,8 +131,14 @@ Erstellen Sie ";
 
         //file_put_contents('openai_response.txt', $response['choices'][0]['message']['content']);
 
+        $text = $response['choices'][0]['message']['content'];
+        // Extract json from text
+        if (!preg_match('/\[.*\]/xs', $text, $matches)) {
+            preg_match('/\{.*\}/xs', $text, $matches);
+        }
+
         // Process OpenAI response
-        $generated_cards = json_decode($response['choices'][0]['message']['content'], true);
+        $generated_cards = json_decode($matches[0], true);
         if (!is_array($generated_cards)) {
             // Ensure data is array
             $generated_cards = [$generated_cards];
