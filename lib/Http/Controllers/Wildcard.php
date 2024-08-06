@@ -47,6 +47,7 @@ class Wildcard
             'isTeacher' => Context::isCourse()
                 ? $GLOBALS['perm']->have_studip_perm('tutor', Context::getId())
                 : $GLOBALS['perm']->have_perm('tutor'),
+            'wordLimit' => \Config::get()->getValue('LERNKARTEN_WORD_LIMIT')
         ];
         $response->getBody()->write($this->view($initialState));
 

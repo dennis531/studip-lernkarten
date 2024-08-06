@@ -7,34 +7,35 @@ import { useDecksStore } from '../stores/decks.js';
 import { useFoldersStore } from '../stores/folders.js';
 import { useCardsStore } from "../stores/cards.js";
 import StudipMessageBox from "../components/base/StudipMessageBox.vue";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import pdfJSWorkerURL from "pdfjs-dist/build/pdf.worker?url";
+import { useContextStore } from "@/stores/context.js";
+import StudipTooltipIcon from "@/components/base/StudipTooltipIcon.vue";
+
+GlobalWorkerOptions.workerSrc = pdfJSWorkerURL;
 
 const { $gettext } = useGettext();
 const router = useRouter();
 const decksStore = useDecksStore();
 const foldersStore = useFoldersStore();
 const cardsStore = useCardsStore();
+const contextStore = useContextStore();
 
 const props = defineProps(['folder']);
 
 const folder = computed(() => foldersStore.byId(props.folder));
-const errorMessage = computed(() => {
-    if (!error.value) {
-        return '';
-    }
-
-    return error?.value?.response?.data?.errors?.[0]?.detail ??
-        $gettext('Beim Generieren der Karten ist ein Fehler aufgetreten.');
-});
+const wordCount = computed(() => fileText.value.split(/\s+/).length);
 
 const showFileInput = ref(false);
 const file = ref(null);
+const fileText = ref('');
+const wordLimit = ref(contextStore.wordLimit);
 const number = ref(5);
 const description = ref('');
 const selectedFolder = ref(folder.value);
 const metadata = ref('');
 const name = ref('');
 const nameRef = ref(null);
-const fileRef = ref(null);
 const isGenerating = ref(false);
 const error = ref(null);
 
@@ -57,15 +58,34 @@ const loadFile = (event) => {
         reader.onload = function (e) {
             // event.target.result contains base64 encoded image
             file.value = e.target.result;
+            loadPdfText();
         }
-        reader.readAsDataURL(event.target.files[0]);
+        reader.readAsArrayBuffer(event.target.files[0]);
+    }
+};
+
+const loadPdfText = async () => {
+    if (file.value) {
+        const pdf = await getDocument(file.value).promise;
+
+        let text = '';
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent()
+
+            textContent.items.forEach(item => {
+                text += item.str + ' ';
+            });
+        }
+
+        fileText.value = text;
     }
 };
 
 const generateCards = (deck) => {
     isGenerating.value = true;
 
-    cardsStore.generateCards(deck, file.value, number.value)
+    cardsStore.generateCards(deck, fileText.value, number.value)
         .then(() => {
             isGenerating.value = false;
             router.push({ name: 'deck', params: { id: deck.id } });
@@ -74,7 +94,7 @@ const generateCards = (deck) => {
             // Remove deck if generation fails
             decksStore.deleteDeck(deck);
             isGenerating.value = false;
-            error.value = err
+            error.value = $gettext('Beim Generieren der Karten ist ein Fehler aufgetreten.');
         })
 }
 
@@ -84,7 +104,7 @@ const onSubmit = () => {
         decksStore
             .createDeck(selectedFolder.value, name.value, description.value, metadata.value)
             .then((deck) => {
-                if (showFileInput && file.value) {
+                if (showFileInput.value && file.value && fileText.value) {
                     generateCards(deck);
                 } else {
                     router.push({ name: 'deck', params: { id: deck.id } });
@@ -110,15 +130,27 @@ function validateFile() {
         return true;
     }
 
+    // Check file input
     if (!file.value) {
-        fileRef.value.setCustomValidity(
-            $gettext('Bitte wählen Sie eine Datei aus.'),
+        error.value = $gettext('Bitte wählen Sie eine Datei aus.');
+        return false;
+    }
+
+    if (!fileText.value) {
+        error.value = $gettext('Die Datei enthält keinen Text oder konnte nicht gelesen werden.');
+        return false;
+    }
+
+    // Check word limit
+    if (wordCount.value > wordLimit.value) {
+        error.value = $gettext(
+            'Die Datei überschreitet mit %{ word_count } Wörtern das Limit von %{ word_limit } Wörtern.',
+            { word_count: wordCount.value, word_limit: wordLimit.value }
         );
         return false;
-    } else {
-        fileRef.value.setCustomValidity('');
-        return true;
     }
+
+    return true;
 }
 </script>
 
@@ -132,8 +164,13 @@ function validateFile() {
         <div v-show="isGenerating" class="lernkarten-loading-indicator" />
 
         <form v-show="!isGenerating" class="default studipform" @submit.prevent="onSubmit">
-            <StudipMessageBox v-if="errorMessage" type="error">
-                {{ errorMessage }}
+            <StudipMessageBox
+                v-if="error"
+                @close="error = null"
+                type="error"
+                default-focus
+            >
+                {{ error }}
             </StudipMessageBox>
 
             <div class="formpart">
@@ -145,6 +182,8 @@ function validateFile() {
                     <span class="textlabel">
                         {{ $gettext('Aus Datei generieren') }}
                     </span>
+                    <StudipTooltipIcon
+                        :text="$gettext('Sie können eine Datei angeben, um Lernkarten aus ihren Textinhalten zu generieren. Für die Generierung wird ein Large Language Model verwendet, sodass Halluzinationen in den Ergebnissen enthalten sein können.')"/>
                 </label>
             </div>
 
@@ -152,7 +191,7 @@ function validateFile() {
                 <div class="formpart">
                     <label class="studiprequired file-upload">
                         <span class="textlabel">
-                            {{ $gettext('Datei auswählen') }}
+                            {{ $gettext('Datei auswählen (max. %{ word_limit } Wörter)', { word_limit: wordLimit }) }}
                         </span>
                         <span
                             class="asterisk"
@@ -164,7 +203,6 @@ function validateFile() {
                             type="file"
                             accept="application/pdf"
                             @change="loadFile"
-                            ref="fileRef"
                             required
                             aria-required="true"
                         />

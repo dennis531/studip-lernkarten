@@ -56,6 +56,10 @@ class CardsGenerate extends NonJsonApiController
             return 'Missing `content` field.';
         }
 
+        if (!self::validContent($json)) {
+            return 'Invalid number of words.';
+        }
+
         if (!self::arrayHas($json, 'number')) {
             return 'Missing `number` field.';
         }
@@ -70,6 +74,15 @@ class CardsGenerate extends NonJsonApiController
         $number = self::arrayGet($json, 'number');
 
         return $number > 0 && $number <= 100;
+    }
+
+    public function validContent(array $json): bool
+    {
+        $content = self::arrayGet($json, 'content');
+        $words = preg_split('/\s+/', $content);
+        $limit = \Config::get()->getValue('LERNKARTEN_WORD_LIMIT');
+
+        return count($words) <= $limit;
     }
 
     /**

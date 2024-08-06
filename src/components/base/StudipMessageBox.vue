@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     type: {
@@ -21,11 +21,16 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    defaultFocus: {
+        type: Boolean,
+        default: false,
+    }
 });
 const emit = defineEmits(['close']);
 
 const closed = ref(false);
 const closedDetails = ref(false);
+const messageboxRef = ref(null);
 
 const classNames = computed(() => {
     return `messagebox_${props.type} ${showDetails.value ? '' : 'details_hidden'}`;
@@ -39,6 +44,12 @@ const showDetails = computed(() => {
     return hasDetails.value && !closedDetails.value;
 });
 
+onMounted(() => {
+    if (props.defaultFocus) {
+        messageboxRef.value?.scrollIntoView();
+    }
+})
+
 const toggleDetails = () => {
     closedDetails.value = !closedDetails.value;
 };
@@ -49,7 +60,7 @@ const close = () => {
 </script>
 
 <template>
-    <div class="messagebox" :class="classNames" v-if="!closed">
+    <div ref="messageboxRef" class="messagebox" :class="classNames" v-if="!closed">
         <div class="messagebox_buttons">
             <a
                 v-if="hideDetails"

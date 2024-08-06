@@ -65,7 +65,7 @@ class Card extends SimpleORMap
      * Generate new cards
      *
      * @param Deck $deck target deck
-     * @param string $content data url containing a file
+     * @param string $content file text content
      * @param int $number number of cards to be generated
      * @return Card[] generated cards
      */
@@ -83,27 +83,13 @@ class Card extends SimpleORMap
         }, $exiting_cards);
         $exiting_cards_json = json_encode($existing_cards_fields);
 
-        // Load file
-        [$prefix, $data] = explode(',', $content, 2);
-        $type_token = explode(':', $prefix, 2)[1];
-        $mime_type = explode(';', $type_token, 2)[0];
-
-        $text = '';
-        if ($mime_type === 'application/pdf') {
-            try {
-                $parser = new \Smalot\PdfParser\Parser();
-                $text = $parser->parseContent(base64_decode($data))->getText();
-            } catch (\Exception $exception) {
-                throw new InternalServerError('Could not parse PDF file');
-            }
-        }
-
         // Build prompts
         $system_prompt = "Sie sind Student/-in an einer Hochschule und erstellen Lernkarten.";
 
+        // TODO: Use template
         $user_prompt = "Die Inhalte für die Lernkarten:
             
-$text
+$content
 
 Erstellen Sie ";
 

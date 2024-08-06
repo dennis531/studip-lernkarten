@@ -26,6 +26,7 @@
         "zip": "zip -r Stud.IP-Lernkarten-v$npm_package_version.zip lib locale migrations vendor dist courseware/dist plugin.manifest LernkartenPlugin.php CoursewareLernkartenBlockPlugin.php LICENSE README"
     },
     "dependencies": {
+        "pdfjs-dist": "^4.5.136",
         "pinia": "^2.1.7",
         "vue": "^3.3.4",
         "vue-router": "^4.2.5"

@@ -21,7 +21,9 @@ export const useContextStore = defineStore(
 
         const userId = computed(() => window.STUDIP.USER_ID);
 
-        return { id, isCourse, isTeacher, type, userId };
+        const wordLimit = computed(() => initialState.wordLimit);
+
+        return { id, isCourse, isTeacher, type, userId, wordLimit };
     },
     {
         persist: true,
